@@ -28,13 +28,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install MariaDB Server
-        run: |
-          sudo apt-get update -qy
-          sudo apt-get install -qy mariadb-server
-
-      - name: Start MariaDB Service
-        run: sudo service mariadb start
+      - name: Set up MariaDB
+        uses: shogo82148/actions-setup-mysql@v1
+        with:
+          distribution: "mariadb"
+          mysql-version: "10.6"
 
       - name: Debug Environment Variables
         run: |
@@ -45,7 +43,7 @@ jobs:
 
       - name: Change MariaDB Root Password
         run: |
-         mysql -u root -proot -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'password'; FLUSH PRIVILEGES;"
+         mysql -u root -proot-password -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'password'; FLUSH PRIVILEGES;"
 
 
       - name: Create Database
