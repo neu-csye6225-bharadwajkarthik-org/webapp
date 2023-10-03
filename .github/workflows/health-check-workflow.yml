@@ -43,15 +43,10 @@ jobs:
           echo "DB_PASSWORD: $DB_PASSWORD"
           echo "DB_NAME: $DB"
 
-      - name: Debug MySQL Configuration
-        run: |
-          cat /etc/mysql/mysql.conf.d/mysql.cnf
-        continue-on-error: true  # Allow the workflow to continue even if the file doesn't exist or there's an error
-
       - name: Test MySQL Connection
         run: |
-          mysql -h $HOST -u $DB_USERNAME -p"$DB_PASSWORD" -e "SELECT 1"
-        continue-on-error: true  # Allow the workflow to continue even if the connection test fails
+          mysql -h $DB_HOST -u $DB_USERNAME -e "SELECT 1"
+        continue-on-error: true
         
       - name: Capture MySQL Error
         run: |
