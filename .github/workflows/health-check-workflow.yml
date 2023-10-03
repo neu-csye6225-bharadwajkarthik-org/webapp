@@ -31,13 +31,13 @@ jobs:
       - name: Shutdown Ubuntu MySQL (SUDO)
         run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
 
-      - name: Install MariaDB
+      - name: Install MySQL
         run: |
           sudo apt-get update -qy
-          sudo apt-get install -qy mariadb-server
+          sudo apt-get install -qy mysql-server
           
-      - name: Start MariaDB Service
-        run: sudo service mariadb start
+      - name: Start MySQL Service
+        run: sudo service mysql start
 
       - name: Debug Environment Variables
         run: |
@@ -48,7 +48,7 @@ jobs:
           
       - name: Change MySQL Root Password
         run: |
-         mysql -u root -p"" -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'password'; FLUSH PRIVILEGES;"
+         mysql -u $DB_USERNAME -proot -e "ALTER USER '$DB_USERNAME'@'$HOST' IDENTIFIED BY '$DB_PASSWORD'; FLUSH PRIVILEGES;"
          
       - name: Create Database
         run: |
