@@ -11,47 +11,42 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB: ${{secrets.DB}}
-      HOST: ${{secrets.HOST}}
-      DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-      DB_USERNAME: ${{secrets.DB_USERNAME}}
-      DB_NAME: ${{secrets.DB_NAME}}
-      DB_DIALECT: ${{secrets.DB_DIALECT}}
-      DB_POOL_MIN: ${{secrets.DB_POOL_MIN}}
-      DB_POOL_MAX: ${{secrets.DB_POOL_MAX}}
-      DB_POOL_ACQUIRE: ${{secrets.DB_POOL_ACQUIRE}}
-      DB_POOL_IDLE: ${{secrets.DB_POOL_IDLE}}
-      APP_PORT: ${{secrets.APP_PORT}}
-      USERS_CSV_PATH: ${{secrets.USERS_CSV_PATH}}
+      DB: ${{ secrets.DB }}
+      HOST: ${{ secrets.HOST }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_DIALECT: ${{ secrets.DB_DIALECT }}
+      DB_POOL_MIN: ${{ secrets.DB_POOL_MIN }}
+      DB_POOL_MAX: ${{ secrets.DB_POOL_MAX }}
+      DB_POOL_ACQUIRE: ${{ secrets.DB_POOL_ACQUIRE }}
+      DB_POOL_IDLE: ${{ secrets.DB_POOL_IDLE }}
+      APP_PORT: ${{ secrets.APP_PORT }}
+      USERS_CSV_PATH: ${{ secrets.USERS_CSV_PATH }}
+
+    services:
+      mariadb:
+        image: getong/mariadb-action:latest
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MYSQL_USER: ${{secrets.DB_USERNAME}}
+          MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MYSQL_DATABASE: ${{secrets.DB}}
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        
-      - name: Shutdown Ubuntu MySQL (SUDO)
-        run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
 
-      - name: Set up MariaDB
-        uses: getong/mariadb-action@v1.1
-        with:
-          host port: 3306 # Optional, default value is 3306. The port of host
-          container port: 3306 # Optional, default value is 3306. The port of container
-          mysql database: ${{secrets.DB}} # Optional, default value is "test". The specified database which will be create
-          mysql root password: ${{secrets.DB_PASSWORD}} # Required if "mysql user" is empty, default is empty. The root superuser password
-          mysql user: ${{secrets.DB_USERNAME}} # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
-          mysql password: ${{secrets.DB_PASSWORD}} # Required if "mysql user" exists. The password for the "mysql user"
-          
-      - name : Start Maria DB
-        run: | 
-          sudo systemctl start mariadb
-          
       - name: Verify MariaDB connection
         run: |
           mysql --host $HOST -u$DB_USERNAME -p$DB_PASSWORD -e "SHOW DATABASES"
 
       - name: Create Database
         run: |
-          mysql -h $HOST -u $DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB"
+          mysql --host $HOST -u$DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB"
 
       - name: Install Node.js
         uses: actions/setup-node@v2
