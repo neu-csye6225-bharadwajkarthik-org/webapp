@@ -41,15 +41,14 @@ jobs:
           echo "DB_USERNAME: $DB_USERNAME"
           echo "DB_PASSWORD: $DB_PASSWORD"
           echo "DB_NAME: $DB"
-
-      - name: Verify MySQL Root Login
+          
+      - name: Change MySQL Root Password
         run: |
-          sudo mysql -u root -e "SELECT 1"
-        continue-on-error: true
-
+          mysql -u root -p'root' -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'password'; FLUSH PRIVILEGES;"
+          
       - name: Create Database
         run: |
-           mysql -h localhost -u root -proot -e "CREATE DATABASE IF NOT EXISTS db_sequelize_mysql"
+           mysql -h localhost -u root -ppassword -e "CREATE DATABASE IF NOT EXISTS db_sequelize_mysql"
 
       - name: Install Node.js
         uses: actions/setup-node@v2
