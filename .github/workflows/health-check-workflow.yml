@@ -1,0 +1,56 @@
+name: Integration Tests
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+   
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      DB: ${{secrets.DB}}
+      HOST: ${{ secrets.HOST }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_DIALECT: ${{ secrets.DB_DIALECT }}
+      DB_POOL_MIN: ${{secrets.DB_POOL_MIN}}
+      DB_POOL_MAX: ${{secrets.DB_POOL_MAX}}
+      DB_POOL_ACQUIRE: ${{secrets.DB_POOL_ACQUIRE}}
+      DB_POOL_IDLE: ${{secrets.DB_POOL_IDLE}}
+      APP_PORT: ${{ secrets.APP_PORT }}
+      USERS_CSV_PATH: ${{ secrets.USERS_CSV_PATH }}
+
+    steps:
+      - name: Get Runner IP Address
+        id: runner_ip
+        run: echo "::set-env name=RUNNER_IP::$(curl -s ifconfig.me)"
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install MySQL 8
+        run: |
+          sudo apt-get update -qy
+          sudo apt-get install -qy mysql-server-8.0
+
+      - name: Start MySQL Service
+        run: sudo service mysql start
+
+      - name: Create Database
+        run: |
+          mysql -h $DB_HOST -u $DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB"
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
