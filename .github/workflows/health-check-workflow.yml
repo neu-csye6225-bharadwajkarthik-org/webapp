@@ -45,7 +45,7 @@ jobs:
 
       - name: Test MySQL Connection
         run: |
-          mysql -h $DB_HOST -u $DB_USERNAME -e "SELECT 1"
+          mysql -h $HOST -u $DB_USERNAME -e "SELECT 1"
         continue-on-error: true
         
       - name: Capture MySQL Error
