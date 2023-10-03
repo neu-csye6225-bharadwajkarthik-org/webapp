@@ -24,31 +24,30 @@ jobs:
       APP_PORT: ${{secrets.APP_PORT}}
       USERS_CSV_PATH: ${{secrets.USERS_CSV_PATH}}
 
+    services:
+      mariadb:
+        image: mariadb:10.6
+        env:
+          MYSQL_ROOT_PASSWORD: ${{secrets.DB_PASSWORD}}  # Use the secret for the MariaDB root password
+        ports:
+          - 3306/tcp
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up MariaDB
-        uses: shogo82148/actions-setup-mysql@v1
-        with:
-          distribution: "mariadb"
-          mysql-version: "10.6"
-
-      - name: Debug Environment Variables
+      - name: Verify MariaDB connection
         run: |
-          echo "HOST: $HOST"
-          echo "DB_USERNAME: $DB_USERNAME"
-          echo "DB_PASSWORD: $DB_PASSWORD"
-          echo "DB_NAME: $DB"
+          apt-get update
+          apt-get install -y mariadb-client
+          mysql --host mariadb -u$DB_USERNAME -p$DB_PASSWORD -e "SHOW DATABASES"
 
-      - name: Change MariaDB Root Password
-        run: |
-         mysql -u root -proot-password -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'password'; FLUSH PRIVILEGES;"
-
+      # You can remove the "Change MariaDB Root Password" step since the password is set from the secret.
 
       - name: Create Database
         run: |
-          mysql -h $HOST -u $DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB"
+          mysql -h mariadb -u $DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB"
 
       - name: Install Node.js
         uses: actions/setup-node@v2
