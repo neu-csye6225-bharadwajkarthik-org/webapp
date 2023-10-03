@@ -48,7 +48,7 @@ jobs:
           
       - name: Change MySQL Root Password
         run: |
-         mysql -u $DB_USERNAME -p"" -e "ALTER USER '$DB_USERNAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD'; FLUSH PRIVILEGES;"
+         mysql -u root -p"" -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'password'; FLUSH PRIVILEGES;"
          
       - name: Create Database
         run: |
