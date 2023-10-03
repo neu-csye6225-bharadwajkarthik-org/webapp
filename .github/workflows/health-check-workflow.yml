@@ -44,12 +44,12 @@ jobs:
 
       - name: Verify MySQL Root Login
         run: |
-          mysql -u root -e "SELECT 1"
+          sudo mysql -u root -e "SELECT 1"
         continue-on-error: true
 
       - name: Create Database
         run: |
-          mysql -h localhost -u root -ppassword -e "CREATE DATABASE IF NOT EXISTS db_sequelize_mysql"
+          sudo mysql -h localhost -u root -ppassword -e "CREATE DATABASE IF NOT EXISTS db_sequelize_mysql"
 
       - name: Install Node.js
         uses: actions/setup-node@v2
