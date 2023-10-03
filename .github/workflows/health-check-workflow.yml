@@ -36,6 +36,23 @@ jobs:
 
       - name: Start MySQL Service
         run: sudo service mysql start
+        
+      - name: Debug Environment Variables
+        run: |
+          echo "HOST: $HOST"
+          echo "DB_USERNAME: $DB_USERNAME"
+          echo "DB_PASSWORD: $DB_PASSWORD"
+          echo "DB_NAME: $DB_NAME"
+      - name: Test MySQL Connection
+        run: |
+          mysql -h $HOST -u $DB_USERNAME -p"$DB_PASSWORD" -e "SELECT 1"
+        continue-on-error: true  # Allow the workflow to continue even if the connection test fails
+        
+      - name: Capture MySQL Error
+        run: |
+          result=$(mysql -h $HOST -u $DB_USERNAME -p"$DB_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS $DB" 2>&1)
+          echo "$result"
+        continue-on-error: true  # Allow the workflow to continue even if there's an error
 
       - name: Create Database
         run: |
