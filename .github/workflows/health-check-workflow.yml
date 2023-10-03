@@ -43,16 +43,22 @@ jobs:
           echo "DB_PASSWORD: $DB_PASSWORD"
           echo "DB_NAME: $DB"
 
-      - name: Test MySQL Connection
+      - name: Change MySQL Root Password
         run: |
-          mysql -h $HOST -u $DB_USERNAME -e "SELECT 1"
+          sudo mysql <<EOF
+          -- Alter the root user's password to an empty string
+          ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';
+          -- Flush privileges to apply the changes
+          FLUSH PRIVILEGES;
+          EOF
+
+          # Exit MySQL
+          exit
+
+      - name: Verify MySQL Root Login
+        run: |
+          mysql -u root -e "SELECT 1"
         continue-on-error: true
-        
-      - name: Capture MySQL Error
-        run: |
-          result=$(mysql -h $HOST -u $DB_USERNAME -p"$DB_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS $DB" 2>&1)
-          echo "$result"
-        continue-on-error: true  # Allow the workflow to continue even if there's an error
 
       - name: Create Database
         run: |
