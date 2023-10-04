@@ -24,30 +24,28 @@ jobs:
       APP_PORT: ${{secrets.APP_PORT}}
       USERS_CSV_PATH: ${{secrets.USERS_CSV_PATH}}
 
+    services:
+      mariadb:
+        image: mariadb:10.6
+        env:
+          MYSQL_ROOT_PASSWORD: ${{secrets.DB_PASSWORD}}  # Use the secret for the MariaDB root password
+        ports:
+          - 3306/tcp
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        
-      - name: Shutdown Ubuntu MySQL (SUDO)
-        run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
 
-      - name: Set up MariaDB
-      - uses: getong/mariadb-action@v1.1
-        with:
-          host port: 3306 # Optional, default value is 3306. The port of host
-          container port: 3306 # Optional, default value is 3306. The port of container
-          mysql database: ${{secrets.DB}} # Optional, default value is "test". The specified database which will be create
-          mysql root password: ${{secrets.DB_PASSWORD}} # Required if "mysql user" is empty, default is empty. The root superuser password
-          mysql user: ${{secrets.DB_USERNAME}} # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
-          mysql password: ${{secrets.DB_PASSWORD}} # Required if "mysql user" exists. The password for the "mysql user"
-          
       - name: Verify MariaDB connection
         run: |
-          mysql --host $HOST -u$DB_USERNAME -p$DB_PASSWORD -e "SHOW DATABASES"
+          sudo apt-get update
+          sudo apt-get install -y mariadb-client
+          mysql --host 127.0.0.1 -u$DB_USERNAME -p$DB_PASSWORD -e "SHOW DATABASES"
 
       - name: Create Database
         run: |
-          mysql -h $HOST -u $DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB"
+          mysql -h 127.0.0.1 -u $DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB"
 
       - name: Install Node.js
         uses: actions/setup-node@v2
