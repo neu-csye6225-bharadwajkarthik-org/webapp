@@ -31,7 +31,28 @@ class AssignmentController{
    static async getAllAssignmentsByUserId(req, res, next) {
       try {
         const userId = req.user.id; // Assuming you have user information from authentication
-        const assignments = await AssignmentService.getAllAssignments(userId);
+        const { name, points,num_of_attempts, deadline } = req.query; // Extract query parameters if they exist
+
+        // Create a filter object based on query parameters (if provided)
+        const filter = {};
+
+        if (name) {
+          filter.name = name;
+        }
+
+        if (points) {
+          filter.points = points;
+        }
+
+        if (num_of_attempts) {
+          filter.num_of_attempts = num_of_attempts;
+        }
+
+        if (deadline) {
+          filter.deadline = deadline;
+        }
+
+        const assignments = await AssignmentService.getAllAssignmentsByUserIdWithFilters(userId, filter);
   
         setSuccessResponse(assignments, StatusCodes.OK, res)
       } catch (error) {
