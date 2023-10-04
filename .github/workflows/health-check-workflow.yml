@@ -11,18 +11,17 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB: ${{secrets.DB}}
-      HOST: ${{secrets.HOST}}
-      DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-      DB_USERNAME: ${{secrets.DB_USERNAME}}
-      DB_NAME: ${{secrets.DB_NAME}}
-      DB_DIALECT: ${{secrets.DB_DIALECT}}
-      DB_POOL_MIN: ${{secrets.DB_POOL_MIN}}
-      DB_POOL_MAX: ${{secrets.DB_POOL_MAX}}
-      DB_POOL_ACQUIRE: ${{secrets.DB_POOL_ACQUIRE}}
-      DB_POOL_IDLE: ${{secrets.DB_POOL_IDLE}}
-      APP_PORT: ${{secrets.APP_PORT}}
-      USERS_CSV_PATH: ${{secrets.USERS_CSV_PATH}}
+      DB: db_sequelize_mysql
+      HOST: localhost
+      DB_PASSWORD: password
+      DB_USERNAME: root
+      DB_DIALECT: mysql
+      DB_POOL_MIN: 0
+      DB_POOL_MAX: 5
+      DB_POOL_ACQUIRE: 30000
+      DB_POOL_IDLE: 10000
+      APP_PORT: 8080
+      USERS_CSV_PATH: /opt/user.csv
 
     steps:
       - name: Checkout code
@@ -42,15 +41,14 @@ jobs:
           echo "DB_USERNAME: $DB_USERNAME"
           echo "DB_PASSWORD: $DB_PASSWORD"
           echo "DB_NAME: $DB"
-
+          
       - name: Change MySQL Root Password
         run: |
-         mysql -u $DB_USERNAME -proot -e "ALTER USER '$DB_USERNAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD'; FLUSH PRIVILEGES;"
-
-
+          mysql -u root -p'root' -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'password'; FLUSH PRIVILEGES;"
+          
       - name: Create Database
         run: |
-          mysql -h $HOST -u $DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB"
+           mysql -h localhost -u root -ppassword -e "CREATE DATABASE IF NOT EXISTS db_sequelize_mysql"
 
       - name: Install Node.js
         uses: actions/setup-node@v2
