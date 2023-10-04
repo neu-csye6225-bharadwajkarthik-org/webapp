@@ -51,7 +51,7 @@ jobs:
 
       - name: Create Database
         run: |
-          mysql -h localhost -u root -p password -e "CREATE DATABASE IF NOT EXISTS db_sequelize_mysql"
+          mysql -h $HOST -u $DB_USERNAME -p"$DB_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS $DB"
 
       - name: Install Node.js
         uses: actions/setup-node@v2
