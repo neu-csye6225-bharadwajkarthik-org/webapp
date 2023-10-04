@@ -41,7 +41,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y mariadb-client
-          # sudo mysql --host mariadb -u$DB_USERNAME -p$DB_PASSWORD -e "SHOW DATABASES"
+          sudo mysql --host mariadb -u$DB_USERNAME -p$DB_PASSWORD -e "SHOW DATABASES"
+
+      # You can remove the "Change MariaDB Root Password" step since the password is set from the secret.
 
       - name: Create Database
         run: |
