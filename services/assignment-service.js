@@ -56,8 +56,9 @@ class AssignmentService{
       }
     }
 
-   static async getAllAssignments(userId) {
+   static async getAllAssignmentsByUserIdWithFilters(userId, filter) {
       try {
+        // Fetch assignment IDs associated with the user and apply the filter
          const assignmentIdsObjectArray = await userAssignmentModel.findAll({
             attributes: ['assignmentId'],
             where: {
@@ -65,13 +66,20 @@ class AssignmentService{
             },
          });
 
-         const assignments = await assignmentModel.findAll({
-            where: {
-               id : assignmentIdsObjectArray.map(assignmentIdObject => assignmentIdObject.assignmentId)
-            }
-         })
-         
-         return assignments;
+         // Map assignment IDs to assignment details
+         const assignmentIds = assignmentIdsObjectArray.map((assignmentIdsObject) => assignmentIdsObject.assignmentId)
+
+         const assignmentFilter = {
+            id: assignmentIds, // Filter by assignment IDs associated with the user
+            ...filter, // Apply additional filters from the query parameters
+          };
+          
+          // Fetch assignments based on the filter
+          const assignments = await assignmentModel.findAll({
+            where: assignmentFilter,
+          });
+
+          return assignments;
       }catch (error) {
          console.error('Error fetching all assignments:', error);
          if(error instanceof ApiError)
