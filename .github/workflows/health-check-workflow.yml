@@ -1,7 +1,7 @@
-name: Integration Tests
+name: Health Check Integeration Test
 
 on:
-  push:
+  pull_request:
     branches:
       - main
   workflow_dispatch:
