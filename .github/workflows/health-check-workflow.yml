@@ -38,6 +38,13 @@ jobs:
           
       - name: Start MySQL Service
         run: sudo service mysql start
+
+      - name: Debug Environment Variables
+        run: |
+          echo "HOST: $HOST"
+          echo "DB_USERNAME: $DB_USERNAME"
+          echo "DB_PASSWORD: $DB_PASSWORD"
+          echo "DB_NAME: $DB"
           
       - name: Change MySQL Root Password
         run: |
