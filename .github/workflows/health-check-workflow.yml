@@ -41,10 +41,6 @@ jobs:
           mysql user: ${{secrets.DB_USERNAME}} # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
           mysql password: ${{secrets.DB_PASSWORD}} # Required if "mysql user" exists. The password for the "mysql user"
           
-      - name : Test MariDB connection
-        run: | 
-          systemctl status mariadb
-          
       - name: Verify MariaDB connection
         run: |
           mysql --host $HOST -u$DB_USERNAME -p$DB_PASSWORD -e "SHOW DATABASES"
