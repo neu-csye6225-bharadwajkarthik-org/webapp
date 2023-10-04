@@ -322,8 +322,6 @@ This will execute the script 'start' defined in package.json which will run the 
 
 ### Testing
 
-#### Development
-
 In addition to the production dependencies, in order to test the codebase with existing integration tests, the Jest dev-dependency can be installed using :
 
  ```sh
@@ -335,40 +333,6 @@ The project can then be tested using the command :
   ```
 Since the app has no UI, the endpoints must be tested using an http client. Postman is recommended for testing the endpoints in this project. 
 
-#### Deploying on a VM
-
-Steps to demo on a Debian VM on Digital Ocean:
-
-1. ssh -i ~/.ssh/<path_to_digitalocean_private_key> root@<vm_ip>
-
-2. scp -i ~/.ssh/digitalocean <path_to_project_zip> root@<vm_ip>:/opt
-
-3. scp -i ~/.ssh/digitalocean <path_to_excel_file> root@<vm_ip>:/opt
-
-4. sudo update
-   
-5. sudo apt install mariadb-server
-   
-6. sudo apt install nodejs npm
-   
-7. mysql -u root -p
-   
-8. Enter pw : (Press Enter)
-   
-9.  ALTER USER 'root'@'localhost' IDENTIFIED BY 'password';
-    
-10. FLUSH PRIVILEGES;
-    
-11. mysql -u root -p
-    
-12. Enter pw : (Press Enter)
-    
-13. CREATE DATABASE db_sequelize_mysql;
-    
-14. sudo systemctl start mariadb
-    
-15. go into project where package.json is located, then npm i -> node server.js
-    
 <p align="right"><a href="#readme-top">(back to top)</a></p>
 
 
