@@ -41,13 +41,13 @@ jobs:
         run: |
           apt-get update
           apt-get install -y mariadb-client
-          sudo mysql --host mariadb -u$DB_USERNAME -p$DB_PASSWORD -e "SHOW DATABASES"
+          mysql --host mariadb -u$DB_USERNAME -p$DB_PASSWORD -e "SHOW DATABASES"
 
       # You can remove the "Change MariaDB Root Password" step since the password is set from the secret.
 
       - name: Create Database
         run: |
-          sudo mysql -h mariadb -u $DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB"
+          mysql -h mariadb -u $DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB"
 
       - name: Install Node.js
         uses: actions/setup-node@v2
