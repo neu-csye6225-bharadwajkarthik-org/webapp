@@ -369,7 +369,6 @@ Steps to demo on a Debian VM on Digital Ocean:
     
 15. go into project where package.json is located, then npm i -> node server.js
     
-    
 <p align="right"><a href="#readme-top">(back to top)</a></p>
 
 
