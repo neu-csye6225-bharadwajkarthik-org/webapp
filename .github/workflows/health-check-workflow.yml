@@ -28,12 +28,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install MariaDB Server
+      - name: Install MySQL 8 and MySQL Client
         run: |
           sudo apt-get update -qy
-          sudo apt-get install -qy mariadb-server
+          sudo apt-get install -qy mysql-server-8.0
 
-      - name: Start MariaDB Service
+      - name: Start MySQL Service
         run: sudo service mysql start
 
       - name: Debug Environment Variables
@@ -43,7 +43,7 @@ jobs:
           echo "DB_PASSWORD: $DB_PASSWORD"
           echo "DB_NAME: $DB"
 
-      - name: Change MariaDB Root Password
+      - name: Change MySQL Root Password
         run: |
          mysql -u $DB_USERNAME -proot -e "ALTER USER '$DB_USERNAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD'; FLUSH PRIVILEGES;"
 
