@@ -39,7 +39,7 @@ jobs:
 
       - name: Create Database
         run: |
-          mysql -h $HOST -u $DB_USERNAME -e "CREATE DATABASE IF NOT EXISTS $DB"
+          mysql -h $HOST -u $DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB"
 
       - name: Install Node.js
         uses: actions/setup-node@v2
