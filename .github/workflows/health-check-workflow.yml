@@ -41,11 +41,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y mariadb-client
-          mysql --host 127.0.0.1 -u$DB_USERNAME -p$DB_PASSWORD -e "SHOW DATABASES"
+          mysql --host localhost -u$DB_USERNAME -p$DB_PASSWORD -e "SHOW DATABASES"
 
       - name: Create Database
         run: |
-          mysql -h 127.0.0.1 -u $DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB"
+          mysql -h mariadb -u $DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB"
 
       - name: Install Node.js
         uses: actions/setup-node@v2
