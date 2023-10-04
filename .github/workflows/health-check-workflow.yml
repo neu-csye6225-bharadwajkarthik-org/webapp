@@ -25,6 +25,9 @@ jobs:
       USERS_CSV_PATH: ${{ secrets.USERS_CSV_PATH }}
 
     steps:
+      - name: Get Runner IP Address
+        id: runner_ip
+        run: echo "::set-env name=RUNNER_IP::$(curl -s ifconfig.me)"
 
       - name: Checkout code
         uses: actions/checkout@v2
