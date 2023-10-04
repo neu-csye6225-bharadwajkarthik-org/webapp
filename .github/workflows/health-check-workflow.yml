@@ -41,7 +41,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y mariadb-client
-          mysql --host localhost -u$DB_USERNAME -p$DB_PASSWORD -e "SHOW DATABASES"
+          # mysql --host localhost -u$DB_USERNAME -p$DB_PASSWORD -e "SHOW DATABASES"
 
       - name: Create Database
         run: |
