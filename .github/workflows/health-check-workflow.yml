@@ -44,9 +44,6 @@ jobs:
         run: |
          mysql -u $DB_USERNAME -proot -e "ALTER USER '$DB_USERNAME'@'$HOST' IDENTIFIED BY '$DB_PASSWORD'; FLUSH PRIVILEGES;"
          
-      - name: Create Database
-        run: |
-          mysql -h $HOST -u $DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB"
           
       - name: Install Node.js
         uses: actions/setup-node@v2
