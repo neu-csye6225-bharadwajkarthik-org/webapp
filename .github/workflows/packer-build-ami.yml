@@ -1,0 +1,127 @@
+name: Packer build AMI
+
+on:
+  # push:
+  #   branches:
+  #     - main
+  workflow_dispatch:
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+
+    env:
+      DB: ${{secrets.DB}}
+      HOST: ${{secrets.HOST}}
+      DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+      DB_USERNAME: ${{secrets.DB_USERNAME}}
+      DB_NAME: ${{secrets.DB_NAME}}
+      DB_DIALECT: ${{secrets.DB_DIALECT}}
+      DB_POOL_MIN: ${{secrets.DB_POOL_MIN}}
+      DB_POOL_MAX: ${{secrets.DB_POOL_MAX}}
+      DB_POOL_ACQUIRE: ${{secrets.DB_POOL_ACQUIRE}}
+      DB_POOL_IDLE: ${{secrets.DB_POOL_IDLE}}
+      APP_PORT: ${{secrets.APP_PORT}}
+      USERS_CSV_PATH: ${{secrets.USERS_CSV_PATH}}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Shutdown Ubuntu MySQL (SUDO)
+        run: sudo service mysql stop
+
+      - name: Install MySQL
+        run: |
+          sudo apt-get update -qy
+          sudo apt-get install -qy mysql-server
+          
+      - name: Start MySQL Service
+        run: sudo service mysql start
+          
+      - name: Change MySQL Root Password
+        run: |
+         mysql -u $DB_USERNAME -proot -e "ALTER USER '$DB_USERNAME'@'$HOST' IDENTIFIED BY '$DB_PASSWORD'; FLUSH PRIVILEGES;"
+         
+      - name: Create Database
+        run: |
+          mysql -h $HOST -u $DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB"
+          
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+  create-artifact:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install tree
+        run: sudo apt-get install tree
+
+      - name: Show current directory and file structure
+        run: |
+          pwd
+          tree
+
+      - name: Create .env file
+        run: |
+          echo "# App configurations" > .env
+          echo "APP_PORT=${{secrets.APP_PORT}}" >> .env
+          echo "" >> .env
+          echo "# DB Configurations" >> .env
+          echo "DB=${{secrets.DB_NAME}}" >> .env
+          echo "HOST=${{secrets.HOST}}" >> .env
+          echo "DB_USERNAME=${{secrets.DB_USERNAME}}" >> .env
+          echo "DB_PASSWORD=${{secrets.DB_PASSWORD}}" >> .env
+          echo "DB_DIALECT=${{secrets.DB_DIALECT}}" >> .env
+          echo "DB_POOL_MIN=${{secrets.DB_POOL_MIN}}" >> .env
+          echo "DB_POOL_MAX=${{secrets.DB_POOL_MAX}}" >> .env
+          echo "DB_POOL_ACQUIRE=${{secrets.DB_POOL_ACQUIRE}}" >> .env
+          echo "DB_POOL_IDLE=${{secrets.DB_POOL_IDLE}}" >> .env
+          echo "" >> .env
+          echo "# Files" >> .env
+          echo "USERS_CSV_PATH=${{secrets.USERS_CSV_PATH}}" >> .env
+
+      - name: Show current directory and file structure
+        run: |
+          pwd
+          tree
+
+      - name: Create artifact ZIP
+        run: zip -r forkedWebappRepo.zip .
+
+      - name: Show current directory and file structure
+        run: |
+          pwd
+          tree
+
+      - name: Create variables.json
+        run: |
+          echo '{
+            "aws_region": "{{secrets.AWS_REGION}}",
+            "source_ami": "{{secrets.SOURCE_AMI}}",
+            "ssh_username": "{{secrets.SSH_USERNAME}}",
+            "subnet_id": "{{secrets.SUBNET_ID}}",
+            "artifact_path": "./forkedWebappRepo.zip",
+            "ami_users": ["{{secrets.AWS_DEMO_USER_ID}}"],
+            "aws_access_key": "${{secrets.AWS_ACCESS_KEY}}",
+            "aws_secret_key": "${{secrets.AWS_SECRET_KEY}}"
+          }' > variables.json
+
+      - name: Show current directory and file structure
+        run: |
+          pwd
+          tree
+
+      - name: Run Packer Build
+        run: packer build -var-file=variables.json .\packer\ami.us-east-1.pkr.hcl
