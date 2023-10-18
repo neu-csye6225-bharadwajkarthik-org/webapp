@@ -1,0 +1,10 @@
+{
+   "aws_region": "us-east-1",
+   "source_ami": "ami-06db4d78cb1d3bbf9",
+   "ssh_username": "admin",
+   "subnet_id": "subnet-0e534a2d740b0e658",
+   "artifact_path": "./forkedWebappRepo.zip",
+   "ami_users": ["715971441311"],
+   "aws_access_key": "AKIA5CZKPWKC2EJXDFVY",
+   "aws_secret_key": "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"
+ }
