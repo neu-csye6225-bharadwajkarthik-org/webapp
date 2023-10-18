@@ -124,9 +124,7 @@ jobs:
             "ssh_username": "${{vars.SSH_USERNAME}}",
             "subnet_id": "${{vars.SUBNET_ID}}",
             "artifact_path": "./forkedWebappRepo.zip",
-            "ami_users": ["${{secrets.AWS_DEMO_USER_ID}}"],
-            "aws_access_key": "${{secrets.AWS_ACCESS_KEY}}",
-            "aws_secret_key": "${{secrets.AWS_SECRET_KEY}}"
+            "ami_users": ["${{secrets.AWS_DEMO_USER_ID}}"]
           }' > variables.json
           
       - name: Show current directory and file structure
@@ -136,6 +134,13 @@ jobs:
 
       - name: Setup `packer`
         uses: hashicorp/setup-packer@main
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY}}
+          aws-secret-access-key: ${{secrets.AWS_SECRET_KEY}}
+          aws-region: ${{vars.AWS_REGION}}
 
       - name: Run `packer init`
         run: "packer init './packer/ami.us-east-1.pkr.hcl'"

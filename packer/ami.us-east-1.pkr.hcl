@@ -33,16 +33,6 @@ variable "ami_users" {
   default = [] 
 }
 
-variable "aws_access_key" {
-  type    = string
-  default = "" 
-}
-
-variable "aws_secret_key" {
-  type    = string
-  default = "" 
-}
-
 variable "artifact_path" {
   type    = string
   default = ""
@@ -56,8 +46,6 @@ source "amazon-ebs" "my-ami" {
     "us-east-1",
   ]
   ami_users  = "${var.ami_users}"      # sharing with demo
-  access_key = "${var.aws_access_key}" # Use environment variable
-  secret_key = "${var.aws_secret_key}" # Use environment variable
 
   aws_polling {
     delay_seconds = 120
