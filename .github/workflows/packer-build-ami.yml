@@ -79,7 +79,7 @@ jobs:
           echo "APP_PORT=${{secrets.APP_PORT}}" >> .env
           echo "" >> .env
           echo "# DB Configurations" >> .env
-          echo "DB=${{secrets.DB_NAME}}" >> .env
+          echo "DB=${{secrets.DB}}" >> .env
           echo "HOST=${{secrets.HOST}}" >> .env
           echo "DB_USERNAME=${{secrets.DB_USERNAME}}" >> .env
           echo "DB_PASSWORD=${{secrets.DB_PASSWORD}}" >> .env
