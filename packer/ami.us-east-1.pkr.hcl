@@ -3,7 +3,7 @@ packer {
     amazon = {
       source  = "github.com/hashicorp/amazon"
       version = ">= 1.0.0"
-     }
+    }
   }
 }
 
@@ -14,7 +14,7 @@ variable "aws_region" {
 
 variable "source_ami" {
   type    = string
-  default = "dummy"
+  default = ""
 }
 
 variable "ssh_username" {
