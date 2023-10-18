@@ -109,12 +109,12 @@ jobs:
       - name: Create variables.json
         run: |
           echo '{
-            "aws_region": "{{secrets.AWS_REGION}}",
-            "source_ami": "{{secrets.SOURCE_AMI}}",
-            "ssh_username": "{{secrets.SSH_USERNAME}}",
-            "subnet_id": "{{secrets.SUBNET_ID}}",
+            "aws_region": "${{secrets.AWS_REGION}}",
+            "source_ami": "${{secrets.SOURCE_AMI}}",
+            "ssh_username": "${{secrets.SSH_USERNAME}}",
+            "subnet_id": "${{secrets.SUBNET_ID}}",
             "artifact_path": "./forkedWebappRepo.zip",
-            "ami_users": ["{{secrets.AWS_DEMO_USER_ID}}"],
+            "ami_users": ["${{secrets.AWS_DEMO_USER_ID}}"],
             "aws_access_key": "${{secrets.AWS_ACCESS_KEY}}",
             "aws_secret_key": "${{secrets.AWS_SECRET_KEY}}"
           }' > variables.json
@@ -123,7 +123,7 @@ jobs:
         run: |
           pwd
           tree
-          
+
       - name: Setup `packer`
         uses: hashicorp/setup-packer@main
 
