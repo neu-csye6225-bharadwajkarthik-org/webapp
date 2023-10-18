@@ -1,9 +1,9 @@
 name: Packer format and validate
 
 on:
-#   push:
-#     branches:
-#       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch: # Manual triggering
 
 jobs:
