@@ -107,28 +107,28 @@ jobs:
           tree
       - name: Display Secrets and Variables
         run: |
-            echo "SSH_USERNAME: ${{secrets.SSH_USERNAME}}"
-            echo "AWS_REGION: ${{secrets.AWS_REGION}}"
-            echo "SOURCE_AMI: ${{secrets.SOURCE_AMI}}"
-            echo "SUBNET_ID: ${{secrets.SUBNET_ID}}"
+            echo "SSH_USERNAME: ${{vars.SSH_USERNAME}}"
+            echo "AWS_REGION: ${{vars.AWS_REGION}}"
+            echo "SOURCE_AMI: ${{vars.SOURCE_AMI}}"
+            echo "SUBNET_ID: ${{vars.SUBNET_ID}}"
             echo "AWS_DEMO_USER_ID: ${{secrets.AWS_DEMO_USER_ID}}"
             echo "AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}"
             echo "AWS_SECRET_KEY: ${{secrets.AWS_SECRET_KEY}}"
         shell: bash
-        
+
       - name: Create variables.json
         run: |
           echo '{
-            "aws_region": "${{secrets.AWS_REGION}}",
-            "source_ami": "${{secrets.SOURCE_AMI}}",
-            "ssh_username": "${{secrets.SSH_USERNAME}}",
-            "subnet_id": "${{secrets.SUBNET_ID}}",
+            "aws_region": "${{vars.AWS_REGION}}",
+            "source_ami": "${{vars.SOURCE_AMI}}",
+            "ssh_username": "${{vars.SSH_USERNAME}}",
+            "subnet_id": "${{vars.SUBNET_ID}}",
             "artifact_path": "./forkedWebappRepo.zip",
             "ami_users": ["${{secrets.AWS_DEMO_USER_ID}}"],
             "aws_access_key": "${{secrets.AWS_ACCESS_KEY}}",
             "aws_secret_key": "${{secrets.AWS_SECRET_KEY}}"
           }' > variables.json
-          ech
+          
       - name: Show current directory and file structure
         run: |
           pwd
