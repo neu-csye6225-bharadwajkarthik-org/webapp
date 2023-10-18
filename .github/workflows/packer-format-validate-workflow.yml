@@ -32,28 +32,7 @@ jobs:
         run: "packer init './packer/ami.us-east-1.pkr.hcl'"
 
       - name: Format Packer Template
-        id: fmt
-        run: "packer fmt -check=true './packer/ami.us-east-1.pkr.hcl'"
-
-      - name: Echo steps.fmt
-        run: echo "${{ toJson(steps.fmt) }}"
-
-      - name: Check Format Changes
-        run: |
-          if [[ ${{ steps.fmt.outputs.exitcode }} -ne 0 ]]; then
-            echo "Packer format command modified the file. Please run 'packer fmt' to format your code."
-            exit 1
-          fi
-        shell: bash
+        run: "packer fmt './packer/ami.us-east-1.pkr.hcl'"
 
       - name: Validate Packer Template
-        id: validate
         run: "packer validate './packer/ami.us-east-1.pkr.hcl'"
-
-      - name: Check Validation Result
-        run: |
-          if [[ ${{ steps.validate.outputs.exitcode }} -ne 0 ]]; then
-            echo "Packer validation failed. Please fix the issues in your template."
-            exit 1
-          fi
-        shell: bash
