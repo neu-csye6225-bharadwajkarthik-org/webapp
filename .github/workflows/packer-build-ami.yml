@@ -91,6 +91,7 @@ jobs:
           echo "" >> .env
           echo "# Files" >> .env
           echo "USERS_CSV_PATH=${{secrets.USERS_CSV_PATH}}" >> .env
+          cat .env
 
       - name: Show current directory and file structure
         run: |
@@ -124,4 +125,4 @@ jobs:
           tree
 
       - name: Run Packer Build
-        run: packer build -var-file=variables.json .\packer\ami.us-east-1.pkr.hcl
+        run: packer build -var-file=variables.json ".\packer\ami.us-east-1.pkr.hcl"
