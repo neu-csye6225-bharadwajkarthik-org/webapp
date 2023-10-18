@@ -105,7 +105,17 @@ jobs:
         run: |
           pwd
           tree
-
+      - name: Display Secrets and Variables
+        run: |
+            echo "SSH_USERNAME: ${{secrets.SSH_USERNAME}}"
+            echo "AWS_REGION: ${{secrets.AWS_REGION}}"
+            echo "SOURCE_AMI: ${{secrets.SOURCE_AMI}}"
+            echo "SUBNET_ID: ${{secrets.SUBNET_ID}}"
+            echo "AWS_DEMO_USER_ID: ${{secrets.AWS_DEMO_USER_ID}}"
+            echo "AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}"
+            echo "AWS_SECRET_KEY: ${{secrets.AWS_SECRET_KEY}}"
+        shell: bash
+        
       - name: Create variables.json
         run: |
           echo '{
@@ -118,7 +128,7 @@ jobs:
             "aws_access_key": "${{secrets.AWS_ACCESS_KEY}}",
             "aws_secret_key": "${{secrets.AWS_SECRET_KEY}}"
           }' > variables.json
-
+          ech
       - name: Show current directory and file structure
         run: |
           pwd
