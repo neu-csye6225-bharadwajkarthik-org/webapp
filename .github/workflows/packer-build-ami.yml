@@ -80,7 +80,7 @@ jobs:
           echo "" >> .env
           echo "# DB Configurations" >> .env
           echo "DB=${{secrets.DB}}" >> .env
-          echo "HOST=${{secrets.HOST}}" >> .env
+          echo "HOST=${{vars.HOST_DEBIAN}}" >> .env
           echo "DB_USERNAME=${{secrets.DB_USERNAME}}" >> .env
           echo "DB_PASSWORD=${{secrets.DB_PASSWORD}}" >> .env
           echo "DB_DIALECT=${{secrets.DB_DIALECT}}" >> .env
