@@ -1,6 +1,6 @@
-name: Packer build AMI
+name: Packer build and deploy AMI
 
-on:
+on: 
   # push:
   #   branches:
   #     - main
@@ -58,7 +58,7 @@ jobs:
       - name: Run tests
         run: npm test
 
-  create-artifact:
+  create-artifact-and-build-ami:
     runs-on: ubuntu-latest
 
     steps:
@@ -123,6 +123,12 @@ jobs:
         run: |
           pwd
           tree
+          
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+
+      - name: Run `packer init`
+        run: "packer init './packer/ami.us-east-1.pkr.hcl'"
 
       - name: Run Packer Build
         run: "packer build -var-file=variables.json './packer/ami.us-east-1.pkr.hcl'"
