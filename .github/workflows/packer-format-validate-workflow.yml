@@ -1,0 +1,28 @@
+name: Packer Build
+
+on:
+#   push:
+#     branches:
+#       - main
+  workflow_dispatch: # Manual triggering
+
+jobs:
+  build:
+    name: format-and-validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install Packer
+        run: |
+          wget https://releases.hashicorp.com/packer/1.9.4/packer_1.9.4_linux_amd64.zip
+          unzip packer_1.9.4_linux_amd64.zip
+          sudo mv packer /usr/local/bin/
+
+      - name: Format Packer Template
+        run: packer fmt ./packer/ami.us-east-1.pkr.hcl
+
+      - name: Validate Packer Template
+        run: packer validate ./packer/ami.us-east-1.pkr.hcl
