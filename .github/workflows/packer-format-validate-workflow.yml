@@ -1,4 +1,4 @@
-name: Packer Build
+name: Packer format and validate
 
 on:
 #   push:
@@ -8,13 +8,15 @@ on:
 
 jobs:
   build:
-    name: format-and-validate
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
 
+      - name: Check Packer Version
+        run: packer --version
+        
       - name: Install Packer
         run: |
           wget https://releases.hashicorp.com/packer/1.9.4/packer_1.9.4_linux_amd64.zip
