@@ -125,4 +125,4 @@ jobs:
           tree
 
       - name: Run Packer Build
-        run: packer build -var-file=variables.json ".\packer\ami.us-east-1.pkr.hcl"
+        run: "packer build -var-file=variables.json './packer/ami.us-east-1.pkr.hcl'"
