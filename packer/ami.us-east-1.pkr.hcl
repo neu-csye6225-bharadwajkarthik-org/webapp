@@ -9,43 +9,43 @@ packer {
 
 variable "aws_region" {
   type    = string
-  default = "" //"us-east-1"
+  default = "" 
 }
 
 variable "source_ami" {
   type    = string
-  default = "dummy" //"ami-06db4d78cb1d3bbf9" # Debian 22.04 LTS
+  default = "dummy" 
 }
 
 variable "ssh_username" {
   type    = string
-  default = "dummy" //"admin"
+  default = "dummy"
 }
 
 variable "subnet_id" {
   type    = string
-  default = "" //"subnet-0e534a2d740b0e658"
+  default = "" 
 }
 
 
 variable "ami_users" {
   type    = list(string)
-  default = [] //["715971441311"] # demo AWS profile
+  default = [] 
 }
 
 variable "aws_access_key" {
   type    = string
-  default = "" //"AKIA5CZKPWKC2EJXDFVY" # dev aws_access_key
+  default = "" 
 }
 
 variable "aws_secret_key" {
   type    = string
-  default = "" //"aD952PIMGlDGGn1tyFh517EZ+0HDQylMP4szms3i" #dev aws_secret_key
+  default = "" 
 }
 
 variable "artifact_path" {
   type    = string
-  default = ""//"./forkedWebappRepo.zip"
+  default = ""
 }
 # https://www.packer.io/plugins/builders/amazon/ebs
 source "amazon-ebs" "my-ami" {
