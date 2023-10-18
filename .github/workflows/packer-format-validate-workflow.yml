@@ -35,9 +35,9 @@ jobs:
         id: fmt
         run: "packer fmt -check=true './packer/ami.us-east-1.pkr.hcl'"
 
-      - name: Echo steps.fmt.outputs
-        run: echo "${{ toJson(steps.fmt.outputs) }}"
-        
+      - name: Echo steps.fmt
+        run: echo "${{ toJson(steps.fmt) }}"
+
       - name: Check Format Changes
         run: |
           if [[ ${{ steps.fmt.outputs.exitcode }} -ne 0 ]]; then
