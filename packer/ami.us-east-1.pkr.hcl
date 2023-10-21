@@ -50,7 +50,7 @@ source "amazon-ebs" "my-ami" {
   aws_polling {
     delay_seconds = 120
     max_attempts  = 50
-  }
+  
 
   instance_type = "t2.micro"
   source_ami    = "${var.source_ami}"   # ami-06db4d78cb1d3bbf9
