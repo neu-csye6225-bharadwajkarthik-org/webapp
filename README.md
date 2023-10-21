@@ -8,7 +8,7 @@
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
-      <ul>
+      <ul> workflow
         <li><a href="#technical-requirements">Technical Requirements</a></li>
         <li><a href="#user-requirements">User Requirements</a></li>
         <li><a href="#folder-structure">Folder Structure</a></li>
