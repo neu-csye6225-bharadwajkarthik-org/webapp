@@ -57,7 +57,7 @@ source "amazon-ebs" "my-ami" {
   ssh_username  = "${var.ssh_username}" # admin
   subnet_id     = "${var.subnet_id}"    # subnet-0e534a2d740b0e658
 
-  launch_block_device_mappings {
+            launch_block_device_mappings {
     delete_on_termination = true
     device_name           = "/dev/xvda"
     volume_size           = 8
