@@ -12,7 +12,7 @@ variable "aws_region" {
   default = ""
 }
 
-variable "source_ami" {
+   variable "source_ami" {
   type    = string
   default = "dummy"
 }
