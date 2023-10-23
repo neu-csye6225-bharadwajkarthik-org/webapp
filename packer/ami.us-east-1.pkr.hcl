@@ -9,12 +9,12 @@ packer {
 
 variable "aws_region" {
   type    = string
-  default = "" 
+  default = ""
 }
 
 variable "source_ami" {
   type    = string
-  default = "dummy" 
+  default = "dummy"
 }
 
 variable "ssh_username" {
@@ -24,13 +24,13 @@ variable "ssh_username" {
 
 variable "subnet_id" {
   type    = string
-  default = "" 
+  default = ""
 }
 
 
 variable "ami_users" {
   type    = list(string)
-  default = [] 
+  default = []
 }
 
 variable "artifact_path" {
@@ -45,7 +45,7 @@ source "amazon-ebs" "my-ami" {
   ami_regions = [
     "us-east-1",
   ]
-  ami_users  = "${var.ami_users}"      # sharing with demo
+  ami_users = "${var.ami_users}" # sharing with demo
 
   aws_polling {
     delay_seconds = 120
