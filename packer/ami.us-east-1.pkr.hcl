@@ -27,7 +27,6 @@ variable "subnet_id" {
   default = ""
 }
 
-
 variable "ami_users" {
   type    = list(string)
   default = []
