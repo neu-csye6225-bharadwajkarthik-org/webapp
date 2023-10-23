@@ -32,7 +32,7 @@ jobs:
         run: "packer init './packer/ami.us-east-1.pkr.hcl'"
 
       - name: Format Packer Template
-        run: "packer fmt './packer/ami.us-east-1.pkr.hcl'"
+        run: "packer fmt -check './packer/ami.us-east-1.pkr.hcl'"
 
       - name: Validate Packer Template
         run: "packer validate './packer/ami.us-east-1.pkr.hcl'"
