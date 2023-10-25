@@ -73,48 +73,18 @@ jobs:
           pwd
           tree
 
-      - name: Create .env file
-        run: |
-          echo "# App configurations" > .env
-          echo "APP_PORT=${{secrets.APP_PORT}}" >> .env
-          echo "" >> .env
-          echo "# DB Configurations" >> .env
-          echo "DB=${{secrets.DB}}" >> .env
-          echo "HOST=${{vars.HOST_DEBIAN}}" >> .env
-          echo "DB_USERNAME=${{secrets.DB_USERNAME}}" >> .env
-          echo "DB_PASSWORD=${{secrets.DB_PASSWORD}}" >> .env
-          echo "DB_DIALECT=${{secrets.DB_DIALECT}}" >> .env
-          echo "DB_POOL_MIN=${{secrets.DB_POOL_MIN}}" >> .env
-          echo "DB_POOL_MAX=${{secrets.DB_POOL_MAX}}" >> .env
-          echo "DB_POOL_ACQUIRE=${{secrets.DB_POOL_ACQUIRE}}" >> .env
-          echo "DB_POOL_IDLE=${{secrets.DB_POOL_IDLE}}" >> .env
-          echo "" >> .env
-          echo "# Files" >> .env
-          echo "USERS_CSV_PATH=${{secrets.USERS_CSV_PATH}}" >> .env
-          cat .env
-
       - name: Show current directory and file structure
         run: |
           pwd
           tree
 
       - name: Create artifact ZIP
-        run: zip -r forkedWebappRepo.zip .
+        run: zip -r webapp.zip .
 
       - name: Show current directory and file structure
         run: |
           pwd
           tree
-      - name: Display Secrets and Variables
-        run: |
-            echo "SSH_USERNAME: ${{vars.SSH_USERNAME}}"
-            echo "AWS_REGION: ${{vars.AWS_REGION}}"
-            echo "SOURCE_AMI: ${{vars.SOURCE_AMI}}"
-            echo "SUBNET_ID: ${{vars.SUBNET_ID}}"
-            echo "AWS_DEMO_USER_ID: ${{secrets.AWS_DEMO_USER_ID}}"
-            echo "AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}"
-            echo "AWS_SECRET_KEY: ${{secrets.AWS_SECRET_KEY}}"
-        shell: bash
 
       - name: Create variables.json
         run: |
@@ -123,7 +93,7 @@ jobs:
             "source_ami": "${{vars.SOURCE_AMI}}",
             "ssh_username": "${{vars.SSH_USERNAME}}",
             "subnet_id": "${{vars.SUBNET_ID}}",
-            "artifact_path": "./forkedWebappRepo.zip",
+            "artifact_path": "./webapp.zip",
             "ami_users": ["${{secrets.AWS_DEMO_USER_ID}}"]
           }' > variables.json
           

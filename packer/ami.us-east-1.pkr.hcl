@@ -27,7 +27,6 @@ variable "subnet_id" {
   default = ""
 }
 
-
 variable "ami_users" {
   type    = list(string)
   default = []
@@ -69,8 +68,13 @@ build {
   sources = ["source.amazon-ebs.my-ami"]
 
   provisioner "file" {                   // provision the artifact
-    source      = "${var.artifact_path}" //"./forkedWebappRepo.zip"
+    source      = "${var.artifact_path}" //"./webapp.zip"
     destination = "~/"                   // trailing slash important for directories, also, transfer to a location accessible by non-sudo users
+  }
+
+  provisioner "file" {
+    source      = "./packer/webapp.service"
+    destination = "/tmp/webapp.service"
   }
 
   provisioner "shell" {
@@ -79,7 +83,9 @@ build {
       "CHECKPOINT_DISABLE=1"
     ]
     scripts = ["./scripts/update_packages.sh",
-      "./scripts/setup_artifact.sh",
-    "./scripts/setup_dependencies.sh"] # setup maria-db server, node, npm and create database 'db_sequelize_mysql' 
+      "./scripts/setup_webapp_user.sh",
+      "./scripts/unzip_artifact.sh",
+      "./scripts/setup_artifact_dependencies.sh",
+    "./scripts/start_webapp_service_daemon.sh"]
   }
 }
