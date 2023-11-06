@@ -72,7 +72,6 @@ jobs:
         run: |
           pwd
           tree
-          - name: Create .env file
           
       - name: Create .env file  
         run: |
