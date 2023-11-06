@@ -44,7 +44,7 @@ source "amazon-ebs" "my-ami" {
   ami_regions = [
     "us-east-1",
   ]
-  ami_users  = "${var.ami_users}" # sharing with demo
+  ami_users = "${var.ami_users}" # sharing with demo
 
   aws_polling {
     delay_seconds = 120
