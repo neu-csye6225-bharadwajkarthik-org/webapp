@@ -1,9 +1,11 @@
 const ApiError = require('../error/api-error')
+const logger = require('./logger')
 const {verifyUserCredentialsInDB} = require('./helpers/crud')
 
 const invalidateNonJSONReqPayload = (req, res , next) => {
    const contentType = req.headers['content-type'] || 'application/json';
    if(contentType !== 'application/json'){
+      logger.error('EXITING invalidateNonJSONReqPayload middleware with error - Non-JSON payload not allowed')
       next(ApiError.badRequest("Non-JSON payload not allowed"))
    }
    next();
@@ -12,6 +14,7 @@ const invalidateNonJSONReqPayload = (req, res , next) => {
 const invalidateNonEmptyReqBody = (req ,res ,next) =>{
    // console.log('in invalidateNonEmptyBody middleware : req = ', req);
    if(Object.keys(req.body).length !== 0){
+      logger.error('EXITING invalidateNonEmptyReqBody middleware with error - Non-Empty payload')
       next(ApiError.badRequest("Non-Empty payload not allowed for this endpoint"));
    }else
       next();
@@ -20,6 +23,7 @@ const invalidateReqWithQueryParams = (req, res, next) => {
    // Check if the request has query parameters
    if (Object.keys(req.query).length > 0) {
      // Pass the error to the next middleware
+     logger.error('EXITING invalidateReqWithQueryParams middleware with error - Non-Empty query parameters')
      return next(ApiError.badRequest("Non-Empty query parameters not allowed for this endpoint"));
    }
 
@@ -31,6 +35,7 @@ const invalidateReqWithQueryParams = (req, res, next) => {
    return (req, res, next) => {
      const requestMethod = req.method.toUpperCase(); // Convert to uppercase
      if (!allowedMethods.includes(requestMethod)) {
+      logger.error(`EXITING onlyAllowMethods middleware with error - unsupported method - ${requestMethod}`)
       console.log('req method = ', requestMethod)
        next(ApiError.notAllowed(`HTTP Method - ${requestMethod} - not allowed for this endpoint`));
        return; // Exit early when the method is not allowed
@@ -39,9 +44,6 @@ const invalidateReqWithQueryParams = (req, res, next) => {
    };
  };
  
-
-
-
 // Middleware to set no-cache headers
 const removeCacheFromResponse = (req, res, next) => {
    // Set Cache-Control headers to specify no caching
@@ -55,10 +57,15 @@ const tokenBasedAuthentication = {
        try{
          const authHeader = req.headers.authorization; // Extract basic authorization header and decode it
          if (!authHeader || !authHeader.startsWith('Basic ')) { // authorization not provided or not supported : 
-            if(authHeader)
-             throw ApiError.unauthorized("Only Basic authentication supported");
-           else
-             throw ApiError.unauthorized("Authorization header is required");
+            if(authHeader){
+               logger.error('EXITING authenticate middleware with error - Only Basic authentication supported');
+               throw ApiError.unauthorized("Only Basic authentication supported");
+            }
+           else{
+            logger.error('EXITING authenticate middleware with error - Authorization header is required');
+            throw ApiError.unauthorized("Authorization header is required");
+           }
+             
          }
      
          const base64Credentials = authHeader.split(' ')[1];
@@ -66,6 +73,7 @@ const tokenBasedAuthentication = {
          const [username, password] = credentials.split(':');
          
          if(!username || !password){
+           logger.error('EXITING authenticate middleware with error - Authentication credentials not provided');
            throw ApiError.unauthorized("Authentication credentials not provided");
          }
  
@@ -73,6 +81,7 @@ const tokenBasedAuthentication = {
          req.user = user; // store fetched authenticated user in request and go to next middleware
          next();
        }catch(error){
+         logger.error('EXITING authenticate middleware with error - ', error);
          next(error)
        }
    }
@@ -83,6 +92,7 @@ const validateDTO = (validateSchema) =>{
       const valid = validateSchema(req.body);
       if(!valid){
          const errors = validateSchema.errors;
+         logger.error('EXITING validateDTO middleware with errors - ', errors);
           next(ApiError.badRequest(errors))
       }
       next()

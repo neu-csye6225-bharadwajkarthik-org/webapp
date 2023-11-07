@@ -1,6 +1,7 @@
 const {DataTypes} = require('sequelize');
 const SequelizeFactory = require('../config/orm-config');
 const {nameValidator} = require('../utils/helpers/non-crud');
+const logger = require('../utils/logger');
 
 const sequelize = SequelizeFactory().get();
 
@@ -47,8 +48,10 @@ const User = sequelize.define("user", {
 (async() => {
    try{
       await sequelize.sync()
+      logger.info('ORM: Successfully synced "user" table');
       console.log("Successfully synced User Table");
    }catch(error){
+      logger.error('ORM: Error syncing "user" table');
       console.log("Error syncing user table")
    }
 })()

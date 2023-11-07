@@ -1,6 +1,6 @@
 const {DataTypes} = require('sequelize');
 const SequelizeFactory = require('../config/orm-config');
-
+const logger = require('../utils/logger');
 const sequelize = SequelizeFactory().get();
 
 const Assignment = sequelize.define("assignment", {
@@ -45,7 +45,9 @@ const Assignment = sequelize.define("assignment", {
    try{
       await sequelize.sync()
       console.log("Successfully synced Assignment Table");
+      logger.info('ORM: Successfully synced "assignment" table');
    }catch(error){
+      logger.error('ORM: Error syncing "assignment" table');
       console.log("Error syncing assignment table")
    }
 })()
