@@ -44,7 +44,7 @@ source "amazon-ebs" "my-ami" {
   ami_regions = [
     "us-east-1",
   ]
-  ami_users = "${var.ami_users}" # sharing with demo
+  ami_users  = "${var.ami_users}" # sharing with demo
 
   aws_polling {
     delay_seconds = 120
@@ -73,8 +73,13 @@ build {
   }
 
   provisioner "file" {
-    source      = "./packer/webapp.service"
+    source      = "./packer/services/webapp.service"
     destination = "/tmp/webapp.service"
+  }
+
+  provisioner "file" {
+    source      = "./packer/config/cloudwatch-config.json"
+    destination = "/tmp/cloudwatch-config.json"
   }
 
   provisioner "shell" {
@@ -82,10 +87,11 @@ build {
       "DEBIAN_FRONTEND=noninteractive",
       "CHECKPOINT_DISABLE=1"
     ]
-    scripts = ["./scripts/update_packages.sh",
-      "./scripts/setup_webapp_user.sh",
-      "./scripts/unzip_artifact.sh",
-      "./scripts/setup_artifact_dependencies.sh",
-    "./scripts/start_webapp_service_daemon.sh"]
+    scripts = ["./packer/scripts/update_packages.sh",
+      "./packer/scripts/setup_webapp_user.sh",
+      "./packer/scripts/unzip_artifact.sh",
+      "./packer/scripts/setup_artifact_dependencies.sh",
+      "./packer/scripts/setup_cloudwatch_agent.sh",
+    "./packer/scripts/start_webapp_service_daemon.sh"]
   }
 }

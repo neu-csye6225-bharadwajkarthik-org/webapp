@@ -1,6 +1,7 @@
 const {Sequelize} = require('sequelize');
 const ApiError = require('../error/api-error')
 // const HelperFunctions = require('../utils/helperFunctions.js');
+const logger = require('../utils/logger');
 
 
 //configure ORM with db settings and make publicly available
@@ -38,6 +39,7 @@ const SequelizeFactory = () =>{
          )
          return newInstance;
       }catch(error){
+         logger.error(`ORM : Error updating sequelize instance with config - `,error);
          console.log("in error of create seq instance error : ", error)
          return null;
       }
@@ -46,6 +48,7 @@ const SequelizeFactory = () =>{
    return { // closures for getter/setter of sequelize instance
       get : () =>{ // public getter of sequelize instance
          if(sequelizeInstance === null){
+            logger.error(`ORM : Error getting sequelize instance.`);
             throw ApiError.serviceUnavailable("service unavailable");
          }
          return sequelizeInstance;

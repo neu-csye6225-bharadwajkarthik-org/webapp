@@ -27,7 +27,11 @@ const createUsersFromCsv = async(usersCsvPath) =>{
       .on('end', async() => {
          // At this point, userData array contains user data from the CSV file, excluding the header row
          console.log('Users data before calling serveice method to push : ', userData);
-         await UserController.createUsers(userData)
+         try{
+            await UserController.createUsers(userData)
+         }catch(e){
+            console.log('Error coming out of createUser controller method call : ', e);
+         }
       });
    }catch(error){
       console.log("Encountered error in user load from csv...")
