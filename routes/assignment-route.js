@@ -5,7 +5,7 @@ const validateAssignmentSchema = require('../schema/validate-assignment-schema')
 
 const assignmentRouter = express.Router();
 
-assignmentRouter.route('/v1/assignments')
+assignmentRouter.route('/assignments')
       .all(MiddlewareAPI.onlyAllowMethods(['GET', 'POST']),
             MiddlewareAPI.invalidateReqWithQueryParams,
             MiddlewareAPI.invalidateNonJSONReqPayload,)
@@ -16,7 +16,7 @@ assignmentRouter.route('/v1/assignments')
            MiddlewareAPI.tokenBasedAuthentication.BASIC,
            AssignmentController.getAllAssignmentsByUserId)
 
-assignmentRouter.route('/v1/assignments/:assignmentId')
+assignmentRouter.route('/assignments/:assignmentId')
       .all(MiddlewareAPI.onlyAllowMethods(['PUT', 'DELETE', 'GET']),
            MiddlewareAPI.invalidateReqWithQueryParams,
            MiddlewareAPI.invalidateNonJSONReqPayload,)
