@@ -92,6 +92,9 @@ jobs:
           echo "# SNS" >> .env
           echo "SNS_TOPIC_ARN=" >> .env
           echo "" >> .env
+          echo "# AWS_REGION" >> .env
+          echo "AWS_REGION=" >> .env
+          echo "" >> .env
           echo "# Files" >> .env
           echo "USERS_CSV_PATH=${{secrets.USERS_CSV_PATH}}" >> .env
           cat .env

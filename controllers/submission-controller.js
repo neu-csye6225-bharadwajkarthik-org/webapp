@@ -5,6 +5,10 @@ const logger = require('../utils/logger');
 const statsDClient = require('../utils/metrics');
 const AWS = require('aws-sdk');
 
+// Configure AWS credentials (assuming the EC2 instance has necessary permissions)
+AWS.config.update({
+   region: process.env['AWS_REGION'], 
+});
 // Create SNS service object
 const sns = new AWS.SNS();
 
