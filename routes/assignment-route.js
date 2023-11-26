@@ -1,7 +1,7 @@
 const express = require('express');
-const AssignmentController = require('../controllers/assignment-controller');
+const {AssignmentController,SubmissionController} = require('../controllers/index');
 const MiddlewareAPI = require('../utils/middlewares');
-const validateAssignmentSchema = require('../schema/validate-assignment-schema')
+const {validateAssignmentSchema, validateSubmissionSchema} = require('../schema/index')
 
 const assignmentRouter = express.Router();
 
@@ -16,6 +16,14 @@ assignmentRouter.route('/assignments')
            MiddlewareAPI.tokenBasedAuthentication.BASIC,
            AssignmentController.getAllAssignmentsByUserId)
 
+assignmentRouter.route('/assignments/:assignmentId/submissions')
+      .all(MiddlewareAPI.onlyAllowMethods(['POST']),
+           MiddlewareAPI.invalidateReqWithQueryParams,
+           MiddlewareAPI.invalidateNonJSONReqPayload,)
+      .post(MiddlewareAPI.validateDTO(validateSubmissionSchema),
+            MiddlewareAPI.tokenBasedAuthentication.BASIC,
+            SubmissionController.createSubmission)
+            
 assignmentRouter.route('/assignments/:assignmentId')
       .all(MiddlewareAPI.onlyAllowMethods(['PUT', 'DELETE', 'GET']),
            MiddlewareAPI.invalidateReqWithQueryParams,
