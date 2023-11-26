@@ -1,0 +1,9 @@
+{
+   "type": "object",
+   "properties": {
+     "submission_url": { "type": "string" }
+   },
+   "required": ["submission_url"],
+   "additionalProperties": false
+}
+ 

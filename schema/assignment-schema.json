@@ -3,12 +3,12 @@
    "properties": {
      "name": { "type": "string" },
      "points": {
-       "type": "number",
+       "type": "integer",
        "minimum": 1,
        "maximum": 100
      },
      "num_of_attempts": {
-       "type": "number",
+       "type": "integer",
        "minimum": 1,
        "maximum": 100
      },

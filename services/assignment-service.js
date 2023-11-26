@@ -39,18 +39,18 @@ class AssignmentService{
           throw ApiError.notFound("Assignment resource not found")
         }
 
-        // Check if the assignment is associated with the user
-        const userAssignment = await userAssignmentModel.findOne({
-          where: {
-            userId: userId,
-            assignmentId: assignmentId,
-          },
-        });
+      //   // Check if the assignment is associated with the user
+      //   const userAssignment = await userAssignmentModel.findOne({
+      //     where: {
+      //       userId: userId,
+      //       assignmentId: assignmentId,
+      //     },
+      //   });
   
-        if (!userAssignment) {
-          logger.error('GET: EXITING getAssignmentById service method with error - unauthorized to access assignment resource');
-          throw ApiError.forbidden('unauthorized to access assignment resource');
-        }
+      //   if (!userAssignment) {
+      //     logger.error('GET: EXITING getAssignmentById service method with error - unauthorized to access assignment resource');
+      //     throw ApiError.forbidden('unauthorized to access assignment resource');
+      //   }
         logger.info('GET: EXITING getAssignmentById service method with no errors.');
         return assignment;
       } catch (error) {

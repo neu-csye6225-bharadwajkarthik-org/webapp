@@ -89,6 +89,7 @@ const tokenBasedAuthentication = {
 
 const validateDTO = (validateSchema) =>{
    return (req, res, next) => {
+      console.log('INSIDE VALIDATE DTO : req.body : ', req.body);
       const valid = validateSchema(req.body);
       if(!valid){
          const errors = validateSchema.errors;
