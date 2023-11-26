@@ -89,6 +89,9 @@ jobs:
           echo "DB_POOL_ACQUIRE=${{secrets.DB_POOL_ACQUIRE}}" >> .env
           echo "DB_POOL_IDLE=${{secrets.DB_POOL_IDLE}}" >> .env
           echo "" >> .env
+          echo "# SNS" >> .env
+          echo "SNS_TOPIC_ARN=" >> .env
+          echo "" >> .env
           echo "# Files" >> .env
           echo "USERS_CSV_PATH=${{secrets.USERS_CSV_PATH}}" >> .env
           cat .env
