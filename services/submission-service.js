@@ -1,5 +1,5 @@
 const {submissionModel, userSubmissionModel} = require('../models/index')
-const {AssignmentService} = require('./index')
+const AssignmentService = require('./assignment-service')
 const ApiError = require('../error/api-error');
 const logger = require('../utils/logger');
 const { Op } = require('sequelize');
