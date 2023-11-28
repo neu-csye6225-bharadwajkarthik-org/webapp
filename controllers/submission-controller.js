@@ -1,4 +1,4 @@
-const SubmissionService = require('../services/submission-service');
+const {SubmissionService,AssignmentService} = require('../services/index');
 const {setSuccessResponse} = require('../utils/helpers/non-crud')
 const StatusCodes = require('../utils/status-codes')
 const logger = require('../utils/logger');
@@ -20,19 +20,26 @@ class SubmissionController{
    static async createSubmission(req, res, next) {
       statsDClient.increment('endpoints.request.http.post.createSubmission');
       logger.info('POST: ENTERING createSubmission controller method.');
+      const userId = req.user.id; // Assuming we have user information from authentication
+      const assignmentId = req.params.assignmentId; // get assignmentId from url
+      const submissionUrl = req.body.submission_url; // assuming we are doing ajv validation on submission schema
+      console.log('userId: ', userId);
+      console.log('assignmentId: ', assignmentId);
+      console.log('submissionUrl: ', submissionUrl)
+      let assignment;
+      try{
+         assignment = await AssignmentService.getAssignmentById(userId, assignmentId) 
+      }catch(err){
+         next(err)
+      }
+      console.log('assignment = ', assignment)
       try {
-        const userId = req.user.id; // Assuming we have user information from authentication
-        const assignmentId = req.params.assignmentId; // get assignmentId from url
-        const submissionUrl = req.body.submission_url; // assuming we are doing ajv validation on submission schema
-        console.log('userId: ', userId);
-        console.log('assignmentId: ', assignmentId);
-        console.log('submissionUrl: ', submissionUrl)
-        
         let createdSubmission;
         let SUBMISSION_ERROR = undefined;
         try{
             createdSubmission = await SubmissionService.createSubmission(userId, assignmentId, submissionUrl);
         }catch(err){
+         console.log('in created submission err : ', err)
             SUBMISSION_ERROR = err
         }
 
