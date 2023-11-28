@@ -1,4 +1,4 @@
-const {assignmentModel,userAssignmentModel} = require('../models/index')
+const {assignmentModel,userAssignmentModel,submissionModel} = require('../models/index')
 const ApiError = require('../error/api-error');
 const logger = require('../utils/logger');
 class AssignmentService{
@@ -113,6 +113,18 @@ class AssignmentService{
             throw ApiError.forbidden('unauthorized to delete assignment resource.');
          }
 
+         // check here if submissions are tied to assignment, if they are, then block deletion of assignment with 400
+         
+         // Check if submissions are tied to the assignment
+         const submissionCount = await submissionModel.count({
+            where: {
+               assignment_id: assignmentId,
+            },
+         });
+         if (submissionCount > 0) {
+            logger.error('DELETE: EXITING deleteAssignmentById service method with error - Submissions exist for this assignment');
+            throw ApiError.badRequest('Submissions exist for this assignment. Cannot delete.');
+         }
          // Delete the assignment
          await assignmentModel.destroy({
             where: {
