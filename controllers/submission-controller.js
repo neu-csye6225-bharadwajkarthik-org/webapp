@@ -26,18 +26,32 @@ class SubmissionController{
         const submissionUrl = req.body.submission_url; // assuming we are doing ajv validation on submission schema
         console.log('userId: ', userId);
         console.log('assignmentId: ', assignmentId);
-        console.log('submissionUrl: ', submissionUrl);
-
-        const createdSubmission = await SubmissionService.createSubmission(userId, assignmentId, submissionUrl);
+        console.log('submissionUrl: ', submissionUrl)
         
-        statsDClient.increment('endpoints.response.http.post.success.createAssignment');
+        let createdSubmission;
+        let SUBMISSION_ERROR = undefined;
+        try{
+            createdSubmission = await SubmissionService.createSubmission(userId, assignmentId, submissionUrl);
+        }catch(err){
+            SUBMISSION_ERROR = err
+        }
+
+        console.log('createdSubmission :', createdSubmission)
 
         console.log('req.user.email : ', req.user.email)
         console.log('submission_url: ', submissionUrl)
+        console.log('userId = ', userId);
+        console.log('assignmentId = ', assignmentId);
+        console.log('submissionId = ', (!SUBMISSION_ERROR ? createdSubmission.id : 'NA'));
         // Push to sns topic
         const params = {
          Message: JSON.stringify({email: req.user.email,
-                                  submission_url: submissionUrl}),
+                                  submission_url: submissionUrl,
+                                 userId: userId,
+                                 assignmentId: assignmentId,
+                                 submissionId: SUBMISSION_ERROR ? 'NA' : createdSubmission.id,
+                                 SUBMISSION_ERROR: SUBMISSION_ERROR
+                              }),
          TopicArn: snsTopicArn,
        };
      
@@ -48,10 +62,14 @@ class SubmissionController{
             } else {
                console.log("Submission URL published to SNS:", data.MessageId);
                logger.info('POST: Successfully published message to SNS')
-               logger.info('POST: EXITING createSubmission controller method with no errors')
             }
          });
 
+        if(SUBMISSION_ERROR)
+            throw SUBMISSION_ERROR
+         
+        logger.info('POST: EXITING createSubmission controller method with no errors')
+        statsDClient.increment('endpoints.response.http.post.success.createAssignment');
         setSuccessResponse(createdSubmission, StatusCodes.CREATED, res)
       } catch (error) {
         statsDClient.increment('endpoints.response.http.post.failure.createSubmission');
