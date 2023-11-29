@@ -9,6 +9,7 @@ const AWS = require('aws-sdk');
 AWS.config.update({
    region: process.env['AWS_REGION'], 
 });
+
 // Create SNS service object
 const sns = new AWS.SNS();
 
@@ -58,7 +59,7 @@ class SubmissionController{
                                  userId: userId,
                                  assignmentId: assignmentId,
                                  submissionId: SUBMISSION_ERROR ? 'NA' : createdSubmission.id,
-                                 SUBMISSION_ERROR: SUBMISSION_ERROR
+                                 SUBMISSION_ERROR: SUBMISSION_ERROR,
                               }),
          TopicArn: snsTopicArn,
        };
