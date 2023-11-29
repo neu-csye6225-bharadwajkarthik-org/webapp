@@ -1,4 +1,5 @@
 require('dotenv').config();
+const models = require('./models/index')
 const app = require('./app');
 const {watchAndUpdateEnvVariables} = require('./utils/helpers/non-crud');
 const {createUsersFromCsv} = require('./utils/helpers/crud')
