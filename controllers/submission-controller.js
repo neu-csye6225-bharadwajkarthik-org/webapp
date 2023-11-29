@@ -31,6 +31,7 @@ class SubmissionController{
          assignment = await AssignmentService.getAssignmentById(userId, assignmentId) 
       }catch(err){
          next(err)
+         return;
       }
       console.log('assignment = ', assignment)
       try {
