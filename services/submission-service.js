@@ -34,7 +34,7 @@ class SubmissionService{
          
          // Count the number of userSubmissions
          const existingSubmissionsCount = userSubmissions.length;
-
+         
          console.log('existing submissions count : ', existingSubmissionsCount);
 
          // Check if submission limit reached
