@@ -200,7 +200,7 @@ jobs:
           # Trigger instance refresh using the latest Launch Template version
           refresh_id=$(aws autoscaling start-instance-refresh \
                     --auto-scaling-group-name $autoscaling_group_name \
-                    --desired-configuration "LaunchTemplateId=$latest_launch_template,Version=$latest_version" \
+                    --desired-configurations "LaunchTemplate={LaunchTemplateId=$latest_launch_template,Version=$latest_launch_template_version}" \
                     --query 'InstanceRefreshId' \
                     --output text)
                     
