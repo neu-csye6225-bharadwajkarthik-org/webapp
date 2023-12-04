@@ -170,6 +170,14 @@ jobs:
           # Extracting Launch Template ID without quotes
           latest_launch_template=$(echo $latest_launch_template | tr -d '"')
           echo "Latest Launch Template ID without quotes: $latest_launch_template"
+
+          # Get the latest Auto Scaling Group name matching the pattern
+          autoscaling_group_name=$(aws autoscaling describe-auto-scaling-groups \
+                               --query "AutoScalingGroups[?starts_with(AutoScalingGroupName, 'autoscaling-group-')].{Name: AutoScalingGroupName, CreateTime: CreationTime} | sort_by(@, &CreateTime)[-1].Name" \
+                               --region ${{vars.AWS_REGION}})
+          echo "Latest Auto Scaling Group Name: $autoscaling_group_name"
+
+          
           
           # Create a new Launch Template version with the updated AMI ID
           aws ec2 create-launch-template-version \
