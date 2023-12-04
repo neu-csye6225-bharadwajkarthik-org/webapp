@@ -197,11 +197,10 @@ jobs:
           autoscaling_group_name=$(echo "$autoscaling_group_name" | tr -d '"')
           echo "Latest Auto Scaling Group Name without quotes: $autoscaling_group_name"
           
-          # Trigger instance refresh and capture the ID
-          # refresh_id=$(aws autoscaling start-instance-refresh --auto-scaling-group-name $autoscaling_group_name --query 'InstanceRefreshId' --output text)
+          # Trigger instance refresh using the latest Launch Template version
           refresh_id=$(aws autoscaling start-instance-refresh \
                     --auto-scaling-group-name $autoscaling_group_name \
-                    --launch-template '{ "LaunchTemplateId": "'$latest_launch_template'", "Version": "'$latest_version'" }' \
+                    --launch-template "{'LaunchTemplateId':'$latest_launch_template','Version':'$latest_version'}" \
                     --query 'InstanceRefreshId' \
                     --output text)
                     
