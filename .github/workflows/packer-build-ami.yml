@@ -199,8 +199,11 @@ jobs:
           while true; do
               status=$(aws autoscaling describe-instance-refreshes --auto-scaling-group-name $autoscaling_group_name --instance-refresh-ids $refresh_id --query 'InstanceRefreshes[0].Status' --output text)
               echo "Instance Refresh Status: $status"
-              if [[ "$status" == "Successful" || "$status" == "Failed" ]]; then
+              if [[ "$status" == "Successful" ]]; then
                   break
+              elif [[ "$status" == "Failed" ]]; then
+                  echo "Instance refresh failed."
+                  exit 1  # Exit with error code
               else
                   sleep 30
               fi
