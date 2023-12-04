@@ -176,7 +176,17 @@ jobs:
                           --launch-template-id $latest_launch_template \
                           --launch-template-data "{\"ImageId\":$latest_ami}" \
                           --region ${{vars.AWS_REGION}}
-
+                          
+          # Get the latest Launch Template version number
+          latest_version=$(aws ec2 describe-launch-template-versions \
+                              --launch-template-id $latest_launch_template \
+                              --query 'LaunchTemplateVersions[*].[VersionNumber]' \
+                              --output text \
+                              --region ${{vars.AWS_REGION}} \
+                              | sort -nr \
+                              | head -n 1)
+          echo "Latest Launch Template Version Number: $latest_version"
+    
           # Get the latest Auto Scaling Group name matching the pattern
           autoscaling_group_name=$(aws autoscaling describe-auto-scaling-groups \
                                --query "AutoScalingGroups[?contains(AutoScalingGroupName, 'autoscaling-group-')].{Name: AutoScalingGroupName} | sort_by(@, &Name)[-1].Name" \
@@ -188,8 +198,13 @@ jobs:
           echo "Latest Auto Scaling Group Name without quotes: $autoscaling_group_name"
           
           # Trigger instance refresh and capture the ID
-          refresh_id=$(aws autoscaling start-instance-refresh --auto-scaling-group-name $autoscaling_group_name --query 'InstanceRefreshId' --output text)
-          
+          # refresh_id=$(aws autoscaling start-instance-refresh --auto-scaling-group-name $autoscaling_group_name --query 'InstanceRefreshId' --output text)
+          refresh_id=$(aws autoscaling start-instance-refresh \
+                    --auto-scaling-group-name $autoscaling_group_name \
+                    --launch-template '{ "LaunchTemplateId": "'$latest_launch_template'", "Version": "'$latest_version'" }' \
+                    --query 'InstanceRefreshId' \
+                    --output text)
+                    
           # Loop to check instance refresh status
           while true; do
               status=$(aws autoscaling describe-instance-refreshes --auto-scaling-group-name $autoscaling_group_name --instance-refresh-ids $refresh_id --query 'InstanceRefreshes[0].Status' --output text)
