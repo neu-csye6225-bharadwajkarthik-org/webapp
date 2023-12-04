@@ -158,4 +158,4 @@ jobs:
                           --owners ${{secrets.AWS_DEV_USER_ID}} \
                           --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' \
                           --region ${{vars.AWS_REGION}})
-          echo "::set-output name=latest_ami_id::${latest_ami}"
+          echo "Latest AMI ID: $latest_ami"
