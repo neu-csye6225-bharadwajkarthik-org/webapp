@@ -3,9 +3,17 @@ const models = require('./models/index')
 const app = require('./app');
 const {watchAndUpdateEnvVariables} = require('./utils/helpers/non-crud');
 const {createUsersFromCsv} = require('./utils/helpers/crud')
+
+function sleep(ms) {
+   return new Promise(resolve => {
+     setTimeout(resolve, ms);
+   });
+ }
+
 // Monitor and reload env vars
 const startServer = async() =>{
    try{
+      await sleep(1500)
       watchAndUpdateEnvVariables()
       const USERS_CSV_PATH = process.env.USERS_CSV_PATH
       console.log(`USERS_CSV_PATH = ${USERS_CSV_PATH}`)
