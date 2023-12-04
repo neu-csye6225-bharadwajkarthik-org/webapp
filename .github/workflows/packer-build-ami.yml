@@ -173,22 +173,40 @@ jobs:
 
           # Retrieve the existing Launch Template data:
           existing_launch_template_data=$(aws ec2 describe-launch-template-versions --launch-template-id $latest_launch_template --region ${{vars.AWS_REGION}})
-          echo "Existing launch data : $existing_launch_template_data"
-          
-          latest_version=$(echo $existing_launch_template_data | jq '.LaunchTemplateVersions | sort_by(.VersionNumber) | last')
-          existing_data_with_updated_image=$(echo $latest_version | jq --arg latest_ami "$latest_ami" '.LaunchTemplateData.ImageId = $latest_ami')
-          echo "latest_version launch template : $latest_version"
-          echo "existing_data_with_updated_image : $existing_data_with_updated_image"
+          # echo "Existing launch template data : $existing_launch_template_data"
 
-          # Create a new Launch Template version with the updated AMI ID
+          #---------------------
+          # Get the latest version of the launch template
+          latest_version=$(echo $existing_launch_template_data | jq '.LaunchTemplateVersions | sort_by(.VersionNumber) | last')
+          echo "Latest Version of launch template: $latest_version"
+          
+          # Extract LaunchTemplateData and update ImageId
+          existing_launch_template_data=$(echo $latest_version | jq '.LaunchTemplateData')
+          echo "Existing Launch Template Data: $existing_launch_template_data"
+          
+          updated_launch_template_data=$(echo $existing_launch_template_data | jq --arg latest_ami "$latest_ami" '.ImageId = $latest_ami')
+          echo "Updated Launch Template Data: $updated_launch_template_data"
+          
+          # Create a new Launch Template version with updated ImageId
           aws ec2 create-launch-template-version \
-                          --launch-template-id $latest_launch_template \
-                          --launch-template-data "{\"ImageId\":$latest_ami}" \
-                          --region ${{vars.AWS_REGION}}
+              --launch-template-id $latest_launch_template \
+              --launch-template-data "$updated_launch_template_data" \
+              --region ${vars.AWS_REGION}
+          # -------------------
+          # latest_version=$(echo $existing_launch_template_data | jq '.LaunchTemplateVersions | sort_by(.VersionNumber) | last')
+          # existing_data_with_updated_image=$(echo $latest_version | jq --arg latest_ami "$latest_ami" '.LaunchTemplateData.ImageId = $latest_ami')
+          # echo "latest_version launch template : $latest_version"
+          # echo "existing_data_with_updated_image : $existing_data_with_updated_image"
+
+          # # Create a new Launch Template version with the updated AMI ID
+          # aws ec2 create-launch-template-version \
+          #                 --launch-template-id $latest_launch_template \
+          #                 --launch-template-data "{\"ImageId\":$latest_ami}" \
+          #                 --region ${{vars.AWS_REGION}}
 
           # Retrieve the existing Launch Template data after adding new version:
           existing_launch_template_data=$(aws ec2 describe-launch-template-versions --launch-template-id $latest_launch_template --region ${{vars.AWS_REGION}})
-          echo "Existing launch data : $existing_launch_template_data"
+          echo "Latest launch data : $existing_launch_template_data"
           
           # # Get the latest Launch Template version number
           # latest_version=$(aws ec2 describe-launch-template-versions \
