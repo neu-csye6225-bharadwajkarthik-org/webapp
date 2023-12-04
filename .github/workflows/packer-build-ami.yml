@@ -131,7 +131,7 @@ jobs:
       - name: Setup `packer`
         uses: hashicorp/setup-packer@main
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS Credentials for dev acc
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{secrets.AWS_ACCESS_KEY}}
@@ -141,5 +141,21 @@ jobs:
       - name: Run `packer init`
         run: "packer init './packer/ami.us-east-1.pkr.hcl'"
 
-      - name: Run Packer Build
-        run: "packer build -var-file=variables.json './packer/ami.us-east-1.pkr.hcl'"
+      # - name: Run Packer Build
+      #   run: "packer build -var-file=variables.json './packer/ami.us-east-1.pkr.hcl'"
+
+      - name: Reconfigure AWS Credentials for demo acc
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{secrets.AWS_DEMO_ACCESS_KEY}}
+          aws-secret-access-key: ${{secrets.AWS_DEMO_SECRET_KEY}}
+          aws-region: ${{vars.AWS_REGION}}
+      
+      - name: Get latest AMI from "dev" account
+        id: get-latest-ami
+        run: |
+          latest_ami=$(aws ec2 describe-images \
+                          --owners ${{secrets.AWS_DEV_USER_ID}} \
+                          --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' \
+                          --region ${{vars.AWS_REGION}})
+          echo "::set-output name=latest_ami_id::${latest_ami}"
