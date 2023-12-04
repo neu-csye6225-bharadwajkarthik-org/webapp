@@ -168,12 +168,12 @@ jobs:
           latest_launch_template=$(echo $latest_launch_template | tr -d '"')
           echo "Latest Launch Template ID without quotes: $latest_launch_template"
           
-          # Get the latest Launch Template version
+          # Get the latest Launch Template version before updation
           latest_version=$(aws ec2 describe-launch-template-versions \
                            --launch-template-id $latest_launch_template \
                            --query 'LaunchTemplateVersions | sort_by(@, &VersionNumber) | [-1].VersionNumber' \
                            --region ${{vars.AWS_REGION}})
-          echo "Latest Launch Template Version: $latest_version"
+          echo "Latest Launch Template Version before updation: $latest_version"
           
           # Create a new Launch Template version with the updated AMI ID
           aws ec2 create-launch-template-version \
@@ -182,9 +182,25 @@ jobs:
                           --source-version $latest_version \
                           --region ${{vars.AWS_REGION}}
                           
+          # Get the latest Launch Template version after updation
+          latest_version=$(aws ec2 describe-launch-template-versions \
+                           --launch-template-id $latest_launch_template \
+                           --query 'LaunchTemplateVersions | sort_by(@, &VersionNumber) | [-1].VersionNumber' \
+                           --region ${{vars.AWS_REGION}})
+          echo "Latest Launch Template Version after updation: $latest_version"
+          
+          desired_config='{
+              "LaunchTemplate": {
+              "LaunchTemplateId": "$latest_launch_template",
+              "Version": "$latest_version"
+              }
+          }'
+          echo "Desired launch temp config : $desired_config"
+          
           # Get the latest Auto Scaling Group name matching the pattern
           autoscaling_group_name=$(aws autoscaling describe-auto-scaling-groups \
                                --query "AutoScalingGroups[?contains(AutoScalingGroupName, 'autoscaling-group-')].{Name: AutoScalingGroupName} | sort_by(@, &Name)[-1].Name" \
+                               --desired-configuration "$desired_config" \
                                --region ${{vars.AWS_REGION}})
           echo "Latest Auto Scaling Group Name: $autoscaling_group_name"
           
