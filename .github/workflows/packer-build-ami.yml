@@ -189,7 +189,7 @@ jobs:
           
           # Trigger instance refresh and capture the ID
           refresh_id=$(aws autoscaling start-instance-refresh \
-                              --auto-scaling-group-name $autoscaling_group_name \
+                              --auto-scaling-group-name "autoscaling-group-f2167f5" \
                               --query 'InstanceRefreshId' \
                               --output text)
           
