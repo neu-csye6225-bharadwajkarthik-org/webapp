@@ -188,7 +188,7 @@ jobs:
           # echo "Latest Auto Scaling Group Name without quotes: $autoscaling_group_name"
           
           # Trigger instance refresh and capture the ID
-          refresh_id=$(aws autoscaling start-instance-refresh --auto-scaling-group-name "autoscaling-group-f2167f5" --query 'InstanceRefreshId' --output text)
+          refresh_id=$(aws autoscaling start-instance-refresh --auto-scaling-group-name "autoscaling-group" --query 'InstanceRefreshId' --output text)
           
           # Loop to check instance refresh status
           while true; do
