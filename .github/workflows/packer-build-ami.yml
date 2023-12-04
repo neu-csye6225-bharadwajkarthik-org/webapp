@@ -159,3 +159,4 @@ jobs:
                           --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' \
                           --region ${{vars.AWS_REGION}})
           echo "Latest AMI ID: $latest_ami"
+          echo "Latest AMI ID through outputs : ${{ steps.get-latest-ami.outputs}}"
