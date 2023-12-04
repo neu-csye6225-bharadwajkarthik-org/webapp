@@ -182,3 +182,17 @@ jobs:
                                --query "AutoScalingGroups[?contains(AutoScalingGroupName, 'autoscaling-group-')].{Name: AutoScalingGroupName} | sort_by(@, &Name)[-1].Name" \
                                --region ${{vars.AWS_REGION}})
           echo "Latest Auto Scaling Group Name: $autoscaling_group_name"
+
+          # Trigger instance refresh and capture the ID
+          refresh_id=$(aws autoscaling start-instance-refresh --auto-scaling-group-name $autoscaling_group_name --query 'InstanceRefreshId' --output text)
+          
+          # Loop to check instance refresh status
+          while true; do
+              status=$(aws autoscaling describe-instance-refreshes --instance-refresh-ids $refresh_id --query 'InstanceRefreshes[0].Status' --output text)
+              echo "Instance Refresh Status: $status"
+              if [[ "$status" == "Successful" || "$status" == "Failed" ]]; then
+                  break
+              else
+                  sleep 30
+              fi
+          done
