@@ -189,12 +189,12 @@ jobs:
                            --region ${{vars.AWS_REGION}})
           echo "Latest Launch Template Version after updation: $latest_version"
           
-          desired_config='{
-              "LaunchTemplate": {
-              "LaunchTemplateId": "$latest_launch_template",
-              "Version": "$latest_version"
-              }
-          }'
+           desired_config="{
+              \"LaunchTemplate\": {
+            \"LaunchTemplateId\": \"$latest_launch_template\",
+            \"Version\": \"$latest_version\"
+            }
+          }"
           echo "Desired launch temp config : $desired_config"
           
           # Get the latest Auto Scaling Group name matching the pattern
