@@ -148,89 +148,60 @@ jobs:
           aws-secret-access-key: ${{secrets.AWS_DEMO_SECRET_ACCESS_KEY}}
           aws-region: ${{vars.AWS_REGION}}
       
-      - name: Get latest AMI from "dev" account
+      - name: Get latest AMI from "dev", update Launch Template, and refresh asg
         id: get-latest-ami
         run: |
           latest_ami=$(aws ec2 describe-images \
                           --owners ${{secrets.AWS_DEV_USER_ID}} \
                           --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' \
                           --region ${{vars.AWS_REGION}})
-          echo "::set-env name=LATEST_AMI::$latest_ami"
           echo "Latest AMI ID: $latest_ami"
-
-      - name: Get latest Launch Template ID
-        id: get-latest-launch-template
-        run: |
+          
+          # Get the latest Launch Template ID
           latest_launch_template=$(aws ec2 describe-launch-templates \
-                                    --filters "Name=launch-template-name,Values=Webapp_Launch_Template-*" \
-                                    --query 'LaunchTemplates | sort_by(@, &CreateTime) | [-1].LaunchTemplateId' \
-                                    --region ${{vars.AWS_REGION}})
-          echo "::set-env name=LATEST_LAUNCH_TEMPLATE::$latest_launch_template"
+                          --filters "Name=launch-template-name,Values=Webapp_Launch_Template-*" \
+                          --query 'LaunchTemplates | sort_by(@, &CreateTime) | [-1].LaunchTemplateId' \
+                          --region ${{vars.AWS_REGION}})
           echo "Latest Launch Template ID: $latest_launch_template"
-      
-      - name: Extract Launch Template ID without quotes
-        run: |
-          latest_launch_template=${{ env.LATEST_LAUNCH_TEMPLATE }}
+          
+          # Extracting Launch Template ID without quotes
           latest_launch_template=$(echo $latest_launch_template | tr -d '"')
-          echo "::set-env name=LATEST_LAUNCH_TEMPLATE::$latest_launch_template"
           echo "Latest Launch Template ID without quotes: $latest_launch_template"
-      
-      - name: Get the latest Launch Template version
-        id: get-latest-launch-template-version
-        run: |
+          
+          # Get the latest Launch Template version
           latest_version=$(aws ec2 describe-launch-template-versions \
-                            --launch-template-id ${{ env.LATEST_LAUNCH_TEMPLATE }} \
-                            --query 'LaunchTemplateVersions | sort_by(@, &VersionNumber) | [-1].VersionNumber' \
-                            --region ${{vars.AWS_REGION}})
-          echo "::set-env name=LATEST_VERSION::$latest_version"
+                           --launch-template-id $latest_launch_template \
+                           --query 'LaunchTemplateVersions | sort_by(@, &VersionNumber) | [-1].VersionNumber' \
+                           --region ${{vars.AWS_REGION}})
           echo "Latest Launch Template Version: $latest_version"
-      
-      - name: Create a new Launch Template version with the updated AMI ID
-        run: |
+          
+          # Create a new Launch Template version with the updated AMI ID
           aws ec2 create-launch-template-version \
-            --launch-template-id ${{ env.LATEST_LAUNCH_TEMPLATE }} \
-            --launch-template-data "{\"ImageId\":${{ env.LATEST_AMI }}}}" \
-            --source-version ${{ env.LATEST_VERSION }} \
-            --region ${{vars.AWS_REGION}}
-      
-      - name: Get the latest Auto Scaling Group name matching the pattern
-        id: get-latest-auto-scaling-group
-        run: |
+                          --launch-template-id $latest_launch_template \
+                          --launch-template-data "{\"ImageId\":$latest_ami}" \
+                          --source-version $latest_version \
+                          --region ${{vars.AWS_REGION}}
+                          
+          # Get the latest Auto Scaling Group name matching the pattern
           autoscaling_group_name=$(aws autoscaling describe-auto-scaling-groups \
-                                   --query "AutoScalingGroups[?contains(AutoScalingGroupName, 'autoscaling-group-')].{Name: AutoScalingGroupName} | sort_by(@, &Name)[-1].Name" \
-                                   --region ${{vars.AWS_REGION}})
-          echo "::set-env name=LATEST_AUTO_SCALING_GROUP::$autoscaling_group_name"
+                               --query "AutoScalingGroups[?contains(AutoScalingGroupName, 'autoscaling-group-')].{Name: AutoScalingGroupName} | sort_by(@, &Name)[-1].Name" \
+                               --region ${{vars.AWS_REGION}})
           echo "Latest Auto Scaling Group Name: $autoscaling_group_name"
-      
-      - name: Extract Auto Scaling Group name without quotes
-        run: |
-          autoscaling_group_name=${{ env.LATEST_AUTO_SCALING_GROUP }}
+          
+          # Extracting autoscaling_group_name without quotes
           autoscaling_group_name=$(echo "$autoscaling_group_name" | tr -d '"')
-          echo "::set-env name=LATEST_AUTO_SCALING_GROUP::$autoscaling_group_name"
           echo "Latest Auto Scaling Group Name without quotes: $autoscaling_group_name"
-      
-      - name: Trigger instance refresh and capture the ID
-        id: trigger-instance-refresh
-        run: |
-          refresh_id=$(aws autoscaling start-instance-refresh \
-                        --auto-scaling-group-name ${{ env.LATEST_AUTO_SCALING_GROUP }} \
-                        --query 'InstanceRefreshId' \
-                        --output text)
-          echo "::set-env name=INSTANCE_REFRESH_ID::$refresh_id"
-          echo "Refresh ID: $refresh_id"
-      
-      - name: Loop to check instance refresh status
-        run: |
+          
+          # Trigger instance refresh and capture the ID
+          refresh_id=$(aws autoscaling start-instance-refresh --auto-scaling-group-name $autoscaling_group_name --query 'InstanceRefreshId' --output text)
+          
+          # Loop to check instance refresh status
           while true; do
-            status=$(aws autoscaling describe-instance-refreshes \
-                      --auto-scaling-group-name ${{ env.LATEST_AUTO_SCALING_GROUP }} \
-                      --instance-refresh-ids ${{ env.INSTANCE_REFRESH_ID }} \
-                      --query 'InstanceRefreshes[0].Status' \
-                      --output text)
-            echo "Instance Refresh Status: $status"
-            if [[ "$status" == "Successful" || "$status" == "Failed" ]]; then
-              break
-            else
-              sleep 30
-            fi
+              status=$(aws autoscaling describe-instance-refreshes --auto-scaling-group-name $autoscaling_group_name --instance-refresh-ids $refresh_id --query 'InstanceRefreshes[0].Status' --output text)
+              echo "Instance Refresh Status: $status"
+              if [[ "$status" == "Successful" || "$status" == "Failed" ]]; then
+                  break
+              else
+                  sleep 30
+              fi
           done
