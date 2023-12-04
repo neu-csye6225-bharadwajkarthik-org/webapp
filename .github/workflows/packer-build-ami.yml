@@ -180,7 +180,7 @@ jobs:
           # Get the latest Auto Scaling Group name matching the pattern
           autoscaling_group_name=$(aws autoscaling describe-auto-scaling-groups \
                                --query "AutoScalingGroups[?contains(AutoScalingGroupName, 'autoscaling-group-')].{Name: AutoScalingGroupName} | sort_by(@, &Name)[-1].Name" \
-                               --region ${{vars.AWS_REGION}} | sed 's/"//g')
+                               --region ${{vars.AWS_REGION}})
           echo "Latest Auto Scaling Group Name: $autoscaling_group_name"
 
           # # Extracting Auto Scaling Group name without quotes
@@ -188,10 +188,7 @@ jobs:
           # echo "Latest Auto Scaling Group Name without quotes: $autoscaling_group_name"
           
           # Trigger instance refresh and capture the ID
-          refresh_id=$(aws autoscaling start-instance-refresh \
-                              --auto-scaling-group-name "autoscaling-group-f2167f5" \
-                              --query 'InstanceRefreshId' \
-                              --output text)
+          refresh_id=$(aws autoscaling start-instance-refresh --auto-scaling-group-name "autoscaling-group-f2167f5" --query 'InstanceRefreshId' --output text)
           
           # Loop to check instance refresh status
           while true; do
