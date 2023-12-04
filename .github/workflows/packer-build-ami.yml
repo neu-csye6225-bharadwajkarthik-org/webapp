@@ -172,7 +172,7 @@ jobs:
           echo "Latest Launch Template ID without quotes: $latest_launch_template"
 
           # Retrieve the existing Launch Template data:
-          existing_launch_template_data=$(aws ec2 describe-launch-template-versions --launch-template-id $latest_launch_template --region ${vars.AWS_REGION})
+          existing_launch_template_data=$(aws ec2 describe-launch-template-versions --launch-template-id $latest_launch_template --region ${{vars.AWS_REGION}})
           echo "Existing launch data : $existing_launch_template_data"
 
           # Create a new Launch Template version with the updated AMI ID
