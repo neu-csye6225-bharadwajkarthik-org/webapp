@@ -176,7 +176,7 @@ jobs:
           echo "Existing launch data : $existing_launch_template_data"
           
           latest_version=$(echo $existing_launch_template_data | jq '.LaunchTemplateVersions | sort_by(.VersionNumber) | last')
-          existing_data_with_updated_image=$(echo $latest_version | jq '.LaunchTemplateData.ImageId = $latest_ami')
+          existing_data_with_updated_image=$(echo $latest_version | jq --arg latest_ami "$latest_ami" '.LaunchTemplateData.ImageId = $latest_ami')
           echo "latest_version launch template : $latest_version"
           echo "existing_data_with_updated_image : $existing_data_with_updated_image"
 
