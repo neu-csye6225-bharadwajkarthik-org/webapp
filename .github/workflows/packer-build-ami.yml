@@ -205,7 +205,7 @@ jobs:
                                   "DesiredConfiguration": {
                                       "LaunchTemplate": {
                                           "LaunchTemplateId": "'"${latest_launch_template}"'",
-                                          "Version": "'"${latest_launch_template_version}"'"
+                                          "Version": "'"${latest_version}"'"
                                       }
                                   }
                               }' \
