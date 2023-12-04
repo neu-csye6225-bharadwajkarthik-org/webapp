@@ -103,7 +103,6 @@ jobs:
         run: |
           pwd
           tree
-
       - name: Create artifact ZIP
         run: zip -r webapp.zip .
 
@@ -111,7 +110,6 @@ jobs:
         run: |
           pwd
           tree
-
       - name: Create variables.json
         run: |
           echo '{
@@ -127,7 +125,6 @@ jobs:
         run: |
           pwd
           tree
-
       - name: Setup `packer`
         uses: hashicorp/setup-packer@main
 
@@ -170,79 +167,26 @@ jobs:
           # Extracting Launch Template ID without quotes
           latest_launch_template=$(echo $latest_launch_template | tr -d '"')
           echo "Latest Launch Template ID without quotes: $latest_launch_template"
-
-          # Retrieve the existing Launch Template data:
-          existing_launch_template_data=$(aws ec2 describe-launch-template-versions --launch-template-id $latest_launch_template --region ${{vars.AWS_REGION}})
-          # echo "Existing launch template data : $existing_launch_template_data"
-
-          #---------------------
-          # Get the latest version of the launch template
-          latest_version=$(echo $existing_launch_template_data | jq '.LaunchTemplateVersions | sort_by(.VersionNumber) | last')
-          echo "Latest Version of launch template: $latest_version"
           
-          # Extract LaunchTemplateData and update ImageId
-          existing_launch_template_data=$(echo $latest_version | jq '.LaunchTemplateData')
-          echo "Existing Launch Template Data: $existing_launch_template_data"
-          
-          updated_launch_template_data=$(echo $existing_launch_template_data | jq --arg latest_ami "$latest_ami" '.ImageId = $latest_ami')
-          echo "Updated Launch Template Data: $updated_launch_template_data"
-          
-          # Create a new Launch Template version with updated ImageId
+          # Create a new Launch Template version with the updated AMI ID
           aws ec2 create-launch-template-version \
-              --launch-template-id $latest_launch_template \
-              --launch-template-data "$updated_launch_template_data" \
-              --region ${vars.AWS_REGION}
-          # -------------------
-          # latest_version=$(echo $existing_launch_template_data | jq '.LaunchTemplateVersions | sort_by(.VersionNumber) | last')
-          # existing_data_with_updated_image=$(echo $latest_version | jq --arg latest_ami "$latest_ami" '.LaunchTemplateData.ImageId = $latest_ami')
-          # echo "latest_version launch template : $latest_version"
-          # echo "existing_data_with_updated_image : $existing_data_with_updated_image"
-
-          # # Create a new Launch Template version with the updated AMI ID
-          # aws ec2 create-launch-template-version \
-          #                 --launch-template-id $latest_launch_template \
-          #                 --launch-template-data "{\"ImageId\":$latest_ami}" \
-          #                 --region ${{vars.AWS_REGION}}
-
-          # Retrieve the existing Launch Template data after adding new version:
-          existing_launch_template_data=$(aws ec2 describe-launch-template-versions --launch-template-id $latest_launch_template --region ${{vars.AWS_REGION}})
-          echo "Latest launch data : $existing_launch_template_data"
-          
-          # # Get the latest Launch Template version number
-          # latest_version=$(aws ec2 describe-launch-template-versions \
-          #                     --launch-template-id $latest_launch_template \
-          #                     --query 'LaunchTemplateVersions[*].[VersionNumber]' \
-          #                     --output text \
-          #                     --region ${{vars.AWS_REGION}} \
-          #                     | sort -nr \
-          #                     | head -n 1)
-          # echo "Latest Launch Template Version Number: $latest_version"
-    
+                          --launch-template-id $latest_launch_template \
+                          --launch-template-data "{\"ImageId\":$latest_ami}" \
+                          --region ${{vars.AWS_REGION}}
+                          
           # Get the latest Auto Scaling Group name matching the pattern
           autoscaling_group_name=$(aws autoscaling describe-auto-scaling-groups \
                                --query "AutoScalingGroups[?contains(AutoScalingGroupName, 'autoscaling-group-')].{Name: AutoScalingGroupName} | sort_by(@, &Name)[-1].Name" \
                                --region ${{vars.AWS_REGION}})
+                               
           echo "Latest Auto Scaling Group Name: $autoscaling_group_name"
-
           # Extracting autoscaling_group_name without quotes
           autoscaling_group_name=$(echo "$autoscaling_group_name" | tr -d '"')
           echo "Latest Auto Scaling Group Name without quotes: $autoscaling_group_name"
           
-          # Trigger instance refresh using the latest Launch Template version
-          refresh_id=$(aws autoscaling start-instance-refresh \
-                              --auto-scaling-group-name $autoscaling_group_name \
-                              --cli-input-json '{
-                                  "AutoScalingGroupName": "'"${autoscaling_group_name}"'",
-                                  "DesiredConfiguration": {
-                                      "LaunchTemplate": {
-                                          "LaunchTemplateId": "'"${latest_launch_template}"'",
-                                          "Version": "'"${latest_version}"'"
-                                      }
-                                  }
-                              }' \
-                              --query 'InstanceRefreshId' \
-                              --output text)
-                    
+          # Trigger instance refresh and capture the ID
+          refresh_id=$(aws autoscaling start-instance-refresh --auto-scaling-group-name $autoscaling_group_name --query 'InstanceRefreshId' --output text)
+          
           # Loop to check instance refresh status
           while true; do
               status=$(aws autoscaling describe-instance-refreshes --auto-scaling-group-name $autoscaling_group_name --instance-refresh-ids $refresh_id --query 'InstanceRefreshes[0].Status' --output text)
