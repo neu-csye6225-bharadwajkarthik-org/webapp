@@ -166,7 +166,11 @@ jobs:
                           --query 'LaunchTemplates | sort_by(@, &CreateTime) | [-1].LaunchTemplateId' \
                           --region ${{vars.AWS_REGION}})
           echo "Latest Launch Template ID: $latest_launch_template"
-
+          
+          # Extracting Launch Template ID without quotes
+          latest_launch_template=$(echo $latest_launch_template | tr -d '"')
+          echo "Latest Launch Template ID without quotes: $latest_launch_template"
+          
           # Create a new Launch Template version with the updated AMI ID
           aws ec2 create-launch-template-version \
                           --launch-template-id $latest_launch_template \
