@@ -219,6 +219,9 @@ jobs:
               elif [[ "$status" == "Failed" ]]; then
                   echo "Instance refresh failed."
                   exit 1  # Exit with error code
+              elif [[ "$status" == "Cancelled" ]]; then
+                  echo "Instance refresh cancelled."
+                  exit 2  # Exit with a different error code for cancellation   
               else
                   sleep 30
               fi
